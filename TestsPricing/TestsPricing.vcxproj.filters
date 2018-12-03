@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="SimulPerf_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulAsian_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_1_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_2_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulCall_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulAsian_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_1_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_2_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_2d_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulBasket_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulCall_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulPerf_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="DeviationPath.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Pricing_0">
+      <UniqueIdentifier>{ebce49ec-adb3-4c3a-b2e0-34e76cf88496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pricing_t">
+      <UniqueIdentifier>{b1271d2d-0500-42c5-ad99-ab57b6ad44c6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
