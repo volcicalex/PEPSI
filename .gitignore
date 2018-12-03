@@ -1,5 +1,9 @@
 # Prerequisites
 *.d
+.vs/*
+TestsPricing/x64/*
+Win32Pricing/x64/*
+x64/*
 
 # Compiled Object files
 *.slo
