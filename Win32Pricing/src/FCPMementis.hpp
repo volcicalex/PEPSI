@@ -35,7 +35,7 @@ public:
 	*
 	* @return phi(trajectoire)
 	*/
-	void fill_performances(PnlMat *path);
+	void fill_performances(const PnlMat *path);
 
 	/**
 	 * Calcule le point d'entrée la trajectoire avec le vecteur de performances
@@ -49,7 +49,7 @@ public:
 	 *
 	 * @return phi(trajectoire)
 	 */
-	double fill_dividendes(PnlMat *path);
+	double fill_dividendes(const PnlMat *path);
 
 	/**
 	 * Calcule la valeur du remboursement sur la trajectoire

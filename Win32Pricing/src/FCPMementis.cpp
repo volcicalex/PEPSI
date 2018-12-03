@@ -24,7 +24,7 @@ FCPMementis::FCPMementis() {
 *
 * @return phi(trajectoire)
 */
-void FCPMementis::fill_performances(PnlMat *path) {
+void FCPMementis::fill_performances(const PnlMat *path) {
 	double perf;
 
 	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
@@ -59,7 +59,7 @@ void FCPMementis::PE() {
 *
 * @return phi(trajectoire)
 */
-double FCPMementis::fill_dividendes(PnlMat *path) {
+double FCPMementis::fill_dividendes(const PnlMat *path) {
 
 	// Dividendes année 1 à 4
 	for (int i = 1; i < 5; i++) {
@@ -92,6 +92,11 @@ double FCPMementis::fill_dividendes(PnlMat *path) {
 * @return phi(trajectoire)
 */
 double FCPMementis::payoff(const PnlMat *path) {
+
+	/* Remplit les différentes vecteurs nécessaires */
+	fill_performances(path);
+	PE();
+	fill_dividendes(path);
 
 	double payoff;
 	double somme_dividende = pnl_vect_sum(dividendes_);
