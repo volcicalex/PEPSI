@@ -49,7 +49,7 @@ public:
 	 *
 	 * @return phi(trajectoire)
 	 */
-	double fill_dividendes(const PnlMat *path);
+	void fill_dividendes(const PnlMat *path);
 
 	/**
 	 * Calcule la valeur du remboursement sur la trajectoire

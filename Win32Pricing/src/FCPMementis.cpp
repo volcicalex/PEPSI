@@ -59,7 +59,7 @@ void FCPMementis::PE() {
 *
 * @return phi(trajectoire)
 */
-double FCPMementis::fill_dividendes(const PnlMat *path) {
+void FCPMementis::fill_dividendes(const PnlMat *path) {
 
 	// Dividendes année 1 à 4
 	for (int i = 1; i < 5; i++) {

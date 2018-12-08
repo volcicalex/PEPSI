@@ -1,27 +1,9 @@
-﻿#pragma once
-
-#include "pnl/pnl_random.h"
-#include "pnl/pnl_vector.h"
-#include "pnl/pnl_matrix.h"
-#include <ctime>
-#include <math.h>
+﻿#include "Model.hpp"
 
 /// \brief Modèle de Black Scholes
-class BlackScholesModel
+class BlackScholesModel : public Model
 {
 public:
-	/*! nombre d'actifs du modèle */
-	int size_;
-	/*! taux d'intérêt */
-	double r_;
-	/*!  paramètre de corrélation */
-	double rho_;
-	/*! vecteur de volatilités */
-	PnlVect *sigma_;
-	/*!  valeurs initiales des sous-jacents */
-	PnlVect *spot_;
-	/*! vecteur des tendances */
-	PnlVect *trend_;
 	/* Matrice de Cholesky */
 	PnlMat *L;
 	/* Matrice de loi normale*/
@@ -51,7 +33,7 @@ public:
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] nbTimeSteps nombre de dates de constatation
 	 */
-	void asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng);
+	void asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) override;
 
 	/**
 	 * Calcule une trajectoire du sous-jacent connaissant le

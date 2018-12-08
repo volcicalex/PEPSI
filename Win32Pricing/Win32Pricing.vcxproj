@@ -145,6 +145,7 @@
     <ClCompile Include="src\BasketOption.cpp" />
     <ClCompile Include="src\BlackScholesModel.cpp" />
     <ClCompile Include="src\CallOption.cpp" />
+    <ClCompile Include="src\FCPMementis.cpp" />
     <ClCompile Include="src\MonteCarlo.cpp" />
     <ClCompile Include="src\PerformanceOption.cpp" />
   </ItemGroup>
@@ -153,6 +154,8 @@
     <ClInclude Include="src\BasketOption.hpp" />
     <ClInclude Include="src\BlackScholesModel.hpp" />
     <ClInclude Include="src\CallOption.hpp" />
+    <ClInclude Include="src\FCPMementis.hpp" />
+    <ClInclude Include="src\Model.hpp" />
     <ClInclude Include="src\MonteCarlo.hpp" />
     <ClInclude Include="src\Option.hpp" />
     <ClInclude Include="src\PerformanceOption.hpp" />

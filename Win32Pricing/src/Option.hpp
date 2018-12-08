@@ -17,6 +17,7 @@ public:
 	int size_;
 	/*! poids des sous-jacents */
 	PnlVect* weights_;
+
 	/**
 	 * Calcule la valeur du payoff sur la trajectoire
 	 *
