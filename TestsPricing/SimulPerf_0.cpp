@@ -24,7 +24,7 @@ TEST(spot_0, SimulPerformance) {
 	PnlVect *payoff_coef = pnl_vect_create_from_scalar(size, 0.2);
 	PnlVect *trend = pnl_vect_create_from_zero(size);
 
-	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, correlation, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, correlation, sigma, spot, trend);
 	Option *pOption = new PerformanceOption(T, timestep, size, payoff_coef);
 	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);

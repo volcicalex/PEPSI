@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Option.hpp"
-#include "BlackScholesModel.hpp"
+#include "Model.hpp"
 #include "pnl/pnl_random.h"
 #include <math.h>
 
@@ -9,8 +9,8 @@
 class MonteCarlo
 {
 public:
-	/*! pointeur vers le modèle de Black Scholes */
-	BlackScholesModel *mod_;
+	/*! pointeur vers un modèle */
+	Model *mod_;
 	/*! pointeur sur l'option */
 	Option *opt_;
 	/*! pointeur sur le générateur de nombres aléatoires */
@@ -28,7 +28,7 @@ public:
 	* param[in]  fdStep : pas de différence finie
 	* param[in]  nbSamples : nombre de tirages Monte Carlo
 	*/
-	MonteCarlo(BlackScholesModel *mod, Option *opt, PnlRng *rng, double fdStep, int nbSamples);
+	MonteCarlo(Model *mod, Option *opt, PnlRng *rng, double fdStep, int nbSamples);
 
 	/**
 	 * Calcule le prix de l'option à la date 0
@@ -59,6 +59,7 @@ public:
 	 * @param[out] delta contient le vecteur de delta
 	 * @param[in] conf_delta contient le vecteur d'intervalle de confiance sur le calcul du delta
 	 */
+	void delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *conf_delta);
 
 	/* destructeur pour la classe MonteCarlo */
 	~MonteCarlo();

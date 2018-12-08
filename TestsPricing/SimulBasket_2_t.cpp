@@ -27,7 +27,7 @@ TEST(spot_t, SimulBasket_2) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 0.025);
 
-	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
 	Option *basket = new BasketOption(T, nbTimeSteps, size, weights, strike);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);

@@ -2,15 +2,10 @@
 
 /**
 * Constructeur de la classe
-* @param[in]  T : maturité
-* @param[in]  nbTimeSteps : nombre de pas de temps de discrétisation
-* @param[in]  size : dimension du modèle
-* @param[in] weights : poids des actifs
-* @param[in]  strike : prix d'exercice de l'option
 */
-FCPMementis::FCPMementis() {
-	T_ = 12;
-	nbTimeSteps_ = 12;
+FCPMementis::FCPMementis(int nbTimeSteps) {
+	T_ = 12.0;
+	nbTimeSteps_ = nbTimeSteps;
 	size_ = 25;
 	weights_ = pnl_vect_create_from_scalar(size_, 0.04);
 
@@ -21,8 +16,6 @@ FCPMementis::FCPMementis() {
 
 /**
 * Remplit le vecteur de performances
-*
-* @return phi(trajectoire)
 */
 void FCPMementis::fill_performances(const PnlMat *path) {
 	double perf;
@@ -40,8 +33,6 @@ void FCPMementis::fill_performances(const PnlMat *path) {
 
 /**
  * Calcule le point d'entrée la trajectoire avec le vecteur de performances
- *
- * @return phi(trajectoire)
  */
 void FCPMementis::PE() {
 	PE_ = 1.0;
@@ -56,8 +47,6 @@ void FCPMementis::PE() {
 
 /**
 * Remplit le vecteur de dividendes pour chaque année
-*
-* @return phi(trajectoire)
 */
 void FCPMementis::fill_dividendes(const PnlMat *path) {
 
@@ -68,7 +57,7 @@ void FCPMementis::fill_dividendes(const PnlMat *path) {
 
 	double dividende_prec = GET(dividendes_, 4);
 	double So_d;
-	double performance_plafonnee;
+	double performance_plafonnee = 0;
 
 	// Dividendes année 5 à 12
 	for (int i = 5; i < nbTimeSteps_ + 1; i++) {

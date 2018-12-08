@@ -1,5 +1,9 @@
 ﻿#include "Model.hpp"
 
+#include "pnl/pnl_vector.h"
+#include <ctime>
+#include <math.h>
+
 /// \brief Modèle de Black Scholes
 class BlackScholesModel : public Model
 {
@@ -48,7 +52,22 @@ public:
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] past trajectoire réalisée jusqu'a la date t
 	 */
-	void asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past);
+	void asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) override;
+
+	/**
+	 * Shift d'une trajectoire du sous-jacent
+	 *
+	 * @param[in]  path contient en input la trajectoire
+	 * du sous-jacent
+	 * @param[out] shift_path contient la trajectoire path
+	 * dont la composante d a été shiftée par (1+h)
+	 * à partir de la date t.
+	 * @param[in] t date à partir de laquelle on shift
+	 * @param[in] h pas de différences finies
+	 * @param[in] d indice du sous-jacent à shifter
+	 * @param[in] timestep pas de constatation du sous-jacent
+	 */
+	void shiftAsset(PnlMat *shift_path, const PnlMat *path, int d, double h, double t, double timestep) override;
 
 	/* Destructeur pour le model de BlackScholes */
 	~BlackScholesModel();

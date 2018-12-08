@@ -1,7 +1,3 @@
-//
-// Created by lecalvmy on 9/18/18.
-//
-
 #include "CallOption.hpp"
 
 /**

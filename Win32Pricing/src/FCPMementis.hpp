@@ -1,10 +1,6 @@
-//
-// Created by PEPSI on 9/18/18.
-//
-
 #include "Option.hpp"
 
-/// \brief Option Asiatique hérite de la classe abstraite option
+/// \brief Option Mementis hérite de la classe abstraite option
 class FCPMementis : public Option
 {
 public:
@@ -22,32 +18,21 @@ public:
 
 	/**
 	* Constructeur de la classe
-	* @param[in]  T : maturité
-	* @param[in]  nbTimeSteps : nombre de pas de temps de discrétisation
-	* @param[in]  size : dimension du modèle
-	* @param[in] weights : poids des actifs
-	* @param[in]  strike : prix d'exercice de l'option
 	*/
-	FCPMementis();
+	FCPMementis(int nbTimeSteps);
 
 	/**
 	* Remplit le vecteur de performances
-	*
-	* @return phi(trajectoire)
 	*/
 	void fill_performances(const PnlMat *path);
 
 	/**
 	 * Calcule le point d'entrée la trajectoire avec le vecteur de performances
-	 *
-	 * @return phi(trajectoire)
 	 */
 	void PE();
 
 	/**
 	 * Remplit le vecteur de dividendes pour chaque année
-	 *
-	 * @return phi(trajectoire)
 	 */
 	void fill_dividendes(const PnlMat *path);
 
@@ -60,6 +45,4 @@ public:
 	 * @return phi(trajectoire)
 	 */
 	double payoff(const PnlMat *path) override;
-
-
 };

@@ -26,7 +26,7 @@ TEST(spot_0, SimulCall) {
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
 	pnl_rng_sseed(rng, time(NULL));
 
-	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
 	Option *call = new CallOption(T, nbTimeSteps, size, weights, strike);
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, call, rng, fdStep, n_samples);
 

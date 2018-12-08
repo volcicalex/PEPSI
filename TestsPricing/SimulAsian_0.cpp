@@ -25,7 +25,7 @@ TEST(spot_0, SimulAsian) {
 	PnlVect *payoff_coef = pnl_vect_create_from_scalar(size, 0.5);
 	PnlVect *trend = pnl_vect_create_from_zero(size);
 
-	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, correlation, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, correlation, sigma, spot, trend);
 	Option *aOption = new AsianOption(T, timestep, size, payoff_coef, strike);
 	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
 

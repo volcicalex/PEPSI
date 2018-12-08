@@ -1,7 +1,3 @@
-//
-// Created by lecalvmy on 9/18/18.
-//
-
 #include "Option.hpp"
 
 /// \brief Option Asiatique hérite de la classe abstraite option
@@ -32,6 +28,4 @@ public:
 	 * @return phi(trajectoire)
 	 */
 	double payoff(const PnlMat *path) override;
-
-
 };

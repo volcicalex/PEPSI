@@ -114,6 +114,30 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 	}
 }
 
+/**
+	 * Shift d'une trajectoire du sous-jacent
+	 *
+	 * @param[in]  path contient en input la trajectoire
+	 * du sous-jacent
+	 * @param[out] shift_path contient la trajectoire path
+	 * dont la composante d a été shiftée par (1+h)
+	 * à partir de la date t.
+	 * @param[in] t date à partir de laquelle on shift
+	 * @param[in] h pas de différences finies
+	 * @param[in] d indice du sous-jacent à shifter
+	 * @param[in] timestep pas de constatation du sous-jacent
+	 */
+void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path, int d, double h, double t, double timestep) {
+
+	double nbSteps = ceil(t / timestep);
+
+	pnl_mat_clone(shift_path, path);
+
+	for (int i = nbSteps; i < path->m; i++) {
+		pnl_mat_set(shift_path, i, d, (1 + h) * MGET(path, i, d));
+	}
+}
+
 /* Destructeur pour le modele de BlackScholes */
 BlackScholesModel::~BlackScholesModel()
 {

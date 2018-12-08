@@ -5,6 +5,7 @@
 #include "../Win32Pricing/src/AsianOption.hpp"
 
 TEST(spot_t, SimulAsian) {
+
 	const char *infile = "../data/simul_asian.dat";
 	const PnlMat *asianPath = pnl_mat_create_from_file(infile);
 
@@ -27,7 +28,7 @@ TEST(spot_t, SimulAsian) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 0.5);
 
-	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
 	Option *asian = new AsianOption(T, nbTimeSteps, size, weights, strike);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);

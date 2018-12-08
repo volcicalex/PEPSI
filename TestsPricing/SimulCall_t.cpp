@@ -30,7 +30,7 @@ TEST(spot_t, SimulCall) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 1.0);
 
-	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
 	Option *call = new CallOption(T, nbTimeSteps, size, weights, strike);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
