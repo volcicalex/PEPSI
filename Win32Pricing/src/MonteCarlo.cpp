@@ -31,14 +31,12 @@ void MonteCarlo::price(double &prix, double &ic) {
 
 	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 	pnl_mat_set_row(path, mod_->spot_, 0);
-	
 	for (int j = 0; j < nbSamples_; ++j) {
 		mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng_);
 		payoff = opt_->payoff(path);
 		prix += payoff;
 		esp_carre += pow(payoff, 2);
 	}
-
 	double estimateur_carre = exp(-2 * mod_->r_*opt_->T_)*(esp_carre / nbSamples_ - pow(prix / nbSamples_, 2));
 	prix *= exp(-mod_->r_*opt_->T_) / nbSamples_;
 	ic = 1.96 * sqrt(estimateur_carre / nbSamples_);

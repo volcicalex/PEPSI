@@ -7,13 +7,14 @@
 
 
 TEST(spot_0, SimulMementis) {
-	double fdStep = 1;  //valeur quelconque car non utilisee pour ce tes
+	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 
 	double r = 0.02;
 	double rho = 0;
 	int n_samples = 50000;
+	int nbTimeSteps = 12;
 
-	Option *mementis = new FCPMementis(n_samples);
+	Option *mementis = new FCPMementis(nbTimeSteps);
 
 	PnlVect *sigma = pnl_vect_create_from_scalar(mementis->size_, 0.200000);
 	PnlVect *spot = pnl_vect_create_from_scalar(mementis->size_, 100.000000);
@@ -30,9 +31,11 @@ TEST(spot_0, SimulMementis) {
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
 
-	printf("Prix 0: %f", prix);
+	printf("Prix 0: %f \n", prix);
+	printf("demi - intervalle de confiance : %f\n", ic);
 
-	ASSERT_TRUE(false);
+
+	//ASSERT_TRUE(false);
 
 	delete mCarlo;
 }

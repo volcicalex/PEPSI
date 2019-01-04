@@ -70,7 +70,7 @@ TEST(spot_t, SimulCall) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	BlackScholesModel *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
 	Option *call2 = new CallOption(T - t, nbTimeSteps - step, size, weights, strike);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, call2, rng2, fdStep, n_samples);
 
@@ -149,7 +149,7 @@ TEST(spot_t, SimulCall2) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	BlackScholesModel *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
 	Option *call2 = new CallOption(T - t, nbTimeSteps - step, size, weights, strike);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, call2, rng2, fdStep, n_samples);
 

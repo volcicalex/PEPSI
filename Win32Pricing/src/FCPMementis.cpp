@@ -9,7 +9,7 @@ FCPMementis::FCPMementis(int nbTimeSteps) {
 	size_ = 25;
 	weights_ = pnl_vect_create_from_scalar(size_, 0.04);
 
-	VLO_ = size_ * 100;
+	VLO_ = 100;
 	dividendes_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
 	performances_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
 }
@@ -37,7 +37,6 @@ void FCPMementis::fill_performances(const PnlMat *path) {
 void FCPMementis::PE() {
 	PE_ = 1.0;
 	double get;
-
 	for (int i=1; i<5; i++) {
 
 		get = GET(performances_, i);
@@ -86,10 +85,8 @@ double FCPMementis::payoff(const PnlMat *path) {
 	fill_performances(path);
 	PE();
 	fill_dividendes(path);
-
 	double payoff;
 	double somme_dividende = pnl_vect_sum(dividendes_);
 	double mean_perf = pnl_vect_sum(performances_) / nbTimeSteps_;
-
 	return VLO_ * (1 + fmax(mean_perf - 1 - somme_dividende, 0));
 }

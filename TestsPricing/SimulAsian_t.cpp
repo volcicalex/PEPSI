@@ -123,7 +123,7 @@ TEST(spot_t, SimulAsian2) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	BlackScholesModel *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
 	Option *asian2 = new AsianOption(T - t, nbTimeSteps - step, size, weights, strike);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, asian2, rng2, fdStep, n_samples);
 
