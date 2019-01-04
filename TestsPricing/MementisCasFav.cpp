@@ -10,7 +10,7 @@ TEST(propMementis, CasFavorable) {
 
 	printf("=== Cas favorable === \n");
 
-	const char *infile = "../data/mementis_casFav.dat";
+	const char *infile = "../data/mementis_casFav.txt";
 	const PnlMat *path = pnl_mat_create_from_file(infile);
 
 	int nbTimeSteps = 12;

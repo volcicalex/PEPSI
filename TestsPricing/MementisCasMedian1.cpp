@@ -6,11 +6,11 @@
 #include "pnl/pnl_finance.h"
 
 /* Tests les dividendes reçus par l'investisseur dans le "cas defavorable" (cf brochure) */
-TEST(propMementis, CasDefavorable) {
+TEST(propMementis, CasMedian1) {
 
-	printf("=== Cas defavorable === \n");
+	printf("=== Cas Median 1 === \n");
 
-	const char *infile = "../data/mementis_casDefav.txt";
+	const char *infile = "../data/mementis_casMedian1.txt";
 	const PnlMat *path = pnl_mat_create_from_file(infile);
 
 	int nbTimeSteps = 12;
@@ -22,8 +22,8 @@ TEST(propMementis, CasDefavorable) {
 	mementis->fill_performances(path);
 
 	// Resultats calcules dans un fichier excel annexe
-	const PnlVect *perf_theorique = pnl_vect_create_from_list(13, 0.000000, 1.103600, 1.111600, 1.106400,
-		1.099600, 0.960800, 0.930000, 0.888400, 0.909600, 0.894400, 0.918400, 0.887200, 0.913600);
+	const PnlVect *perf_theorique = pnl_vect_create_from_list(13, 0.000000, 1.103600, 1.111600, 1.106400, 1.099600, 0.960800, 0.930000, 0.926400,
+		0.960000, 0.972000, 0.984000, 1.008800, 1.118400);
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->performances_, perf_theorique, 0.001));
 
@@ -43,7 +43,7 @@ TEST(propMementis, CasDefavorable) {
 
 	// Resultats calcules dans un fichier excel annexe
 	const PnlVect *div_theorique = pnl_vect_create_from_list(13, 0.000000, 5.600000, 5.600000, 5.600000, 5.600000, 3.360000,
-		2.016000, 1.209600, 0.725760, 0.435456, 0.261274, 0.156764, 0.094058);
+		2.016000, 1.209600, 0.725760, 0.435456, 0.261274, 0.520000, 3.160000);
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->dividendes_, div_theorique, 0.001));
 
