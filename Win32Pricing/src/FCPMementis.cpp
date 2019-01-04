@@ -90,7 +90,7 @@ double FCPMementis::payoff(const PnlMat *path) {
 
 	double somme_dividende = pnl_vect_sum(niveau_div);
 	double mean_perf = pnl_vect_sum(performances_) / nbTimeSteps_;
-	double plus_value = mean_perf - somme_dividende;
+	double plus_value = fmax(mean_perf - somme_dividende, 0);
 
 	return VLO_ * (1 + plus_value);
 }
