@@ -8,7 +8,7 @@ public:
 	double VLO_;
 
 	/* Point d'entrée */
-	double PE_;
+	float PE_;
 
 	/* Vecteur de performances */
 	PnlVect *performances_;

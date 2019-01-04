@@ -36,9 +36,8 @@ void FCPMementis::fill_performances(const PnlMat *path) {
  */
 void FCPMementis::PE() {
 	PE_ = 1.0;
-	double get;
+	float get;
 	for (int i=1; i<5; i++) {
-
 		get = GET(performances_, i);
 		if (get < PE_) PE_ = get;
 	}
@@ -54,19 +53,18 @@ void FCPMementis::fill_dividendes(const PnlMat *path) {
 		pnl_vect_set(dividendes_, i, VLO_ * 0.056);
 	}
 
-	double dividende_prec = GET(dividendes_, 4);
-	double So_d;
-	double performance_plafonnee = 0;
+	float dividende_prec = GET(dividendes_, 4);
+	float So_d;
+	float performance_plafonnee;
 
 	// Dividendes année 5 à 12
 	for (int i = 5; i < nbTimeSteps_ + 1; i++) {
-
+		performance_plafonnee = 0;
 		for (int d = 0; d < size_; d++) {
 			So_d = MGET(path, 0, d);
 			performance_plafonnee += fmin(0.1, (MGET(path, i, d) - So_d * PE_) / So_d);
 		}
-
-		dividende_prec = VLO_ * fmax(0.6 * dividende_prec, performance_plafonnee / 25);
+		dividende_prec = VLO_ * fmax(0.6 * dividende_prec/VLO_, performance_plafonnee / size_);
 		pnl_vect_set(dividendes_, i, dividende_prec);
 	}
 }
@@ -77,7 +75,7 @@ void FCPMementis::fill_dividendes(const PnlMat *path) {
 * @param[in] path est une matrice de taille (N+1) x d
 * contenant une trajectoire du modèle telle que créée
 * par la fonction asset.
-* @return phi(trajectoire)
+* @return payoff = phi(trajectoire)
 */
 double FCPMementis::payoff(const PnlMat *path) {
 
@@ -85,8 +83,14 @@ double FCPMementis::payoff(const PnlMat *path) {
 	fill_performances(path);
 	PE();
 	fill_dividendes(path);
-	double payoff;
-	double somme_dividende = pnl_vect_sum(dividendes_);
+
+	// Vecteur du niveau de dividendes en pourcentage
+	PnlVect *niveau_div = pnl_vect_copy(dividendes_);
+	pnl_vect_div_scalar(niveau_div, VLO_);
+
+	double somme_dividende = pnl_vect_sum(niveau_div);
 	double mean_perf = pnl_vect_sum(performances_) / nbTimeSteps_;
-	return VLO_ * (1 + fmax(mean_perf - 1 - somme_dividende, 0));
+	double plus_value = mean_perf - somme_dividende;
+
+	return VLO_ * (1 + plus_value);
 }
