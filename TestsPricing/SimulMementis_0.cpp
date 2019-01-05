@@ -5,7 +5,7 @@
 #include "../Win32Pricing/src/FCPMementis.hpp"
 #include "pnl/pnl_finance.h"
 
-
+// sans versement dividendes pour le moment
 TEST(spot_0, SimulMementis) {
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 

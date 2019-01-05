@@ -56,5 +56,5 @@ TEST(propMementis, CasMedian1) {
 	ASSERT_LE(payoff, payoff_theorique + 0.001);
 	ASSERT_GE(payoff, payoff_theorique - 0.001);
 
-	/* 04/01/19 : soucis dans le calcul du payoff, on obtient 167 alors qu'on devrait avoir 0 : erreur dans la formule ou dans la brochure ? */
+	/* 04/01/19 : soucis dans le calcul du payoff, erreur dans la formule ou dans la brochure ? */
 }
