@@ -28,7 +28,7 @@ TEST(spot_0, SimulCallDiv) {
 
 	//Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
 	Option *call = new CallOption(T, nbTimeSteps, size, weights, strike);
-	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, call, rng, fdStep, n_samples);
+	//MonteCarlo *mCarlo = new MonteCarlo(bsmodel, call, rng, fdStep, n_samples);
 
 	//PnlVect *dividendes = pnl_vect_create_from_scalar(12, 0.01);
 	double prix = 0.0;
@@ -73,5 +73,5 @@ TEST(spot_0, SimulCallDiv) {
 	// Formule fermee pour call versant dividende discret fixe
 	double prix2 = exp(-r * T)*(F*N_d1 - strike * N_d2);
 	printf("prix call avec div %f \n", prix2);
-	delete mCarlo;
+	//delete mCarlo;
 }
