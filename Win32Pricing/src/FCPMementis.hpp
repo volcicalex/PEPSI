@@ -13,6 +13,9 @@ public:
 	/* Vecteur de performances */
 	PnlVect *performances_;
 
+	/* Vecteur de performances plafonnees */
+	PnlVect *performances_plaf_;
+
 	/* Vecteur de dividendes */
 	PnlVect *dividendes_;
 
@@ -25,6 +28,11 @@ public:
 	* Remplit le vecteur de performances
 	*/
 	void fill_performances(const PnlMat *path);
+
+	/**
+	* Remplit le vecteur de performances plafonnees
+	*/
+	void fill_performances_plaf(const PnlMat *path);
 
 	/**
 	 * Calcule le point d'entrée la trajectoire avec le vecteur de performances

@@ -12,6 +12,8 @@ FCPMementis::FCPMementis(int nbTimeSteps) {
 	VLO_ = 100;
 	dividendes_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
 	performances_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
+	performances_plaf_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
+
 }
 
 /**
@@ -27,7 +29,7 @@ void FCPMementis::fill_performances(const PnlMat *path) {
 
 			perf += MGET(path, i, d) / MGET(path, 0, d);
 		}
-		pnl_vect_set(performances_, i, perf / 25);
+		pnl_vect_set(performances_, i, perf / size_);
 	}
 }
 
@@ -44,6 +46,23 @@ void FCPMementis::PE() {
 }
 
 /**
+* Remplit le vecteur de performances
+*/
+void FCPMementis::fill_performances_plaf(const PnlMat *path) {
+	double perf_plaf;
+	float So_d;
+	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
+
+		perf_plaf = 0;
+		for (int d = 0; d < size_; d++) {
+			So_d = MGET(path, 0, d);
+			perf_plaf += fmin(0.1, (MGET(path, i, d) - So_d * PE_) / So_d);
+		}
+		pnl_vect_set(performances_plaf_, i, perf_plaf / size_);
+	}
+}
+
+/**
 * Remplit le vecteur de dividendes pour chaque année
 */
 void FCPMementis::fill_dividendes(const PnlMat *path) {
@@ -54,17 +73,12 @@ void FCPMementis::fill_dividendes(const PnlMat *path) {
 	}
 
 	float dividende_prec = GET(dividendes_, 4);
-	float So_d;
-	float performance_plafonnee;
+
+	fill_performances_plaf(path);
 
 	// Dividendes année 5 à 12
 	for (int i = 5; i < nbTimeSteps_ + 1; i++) {
-		performance_plafonnee = 0;
-		for (int d = 0; d < size_; d++) {
-			So_d = MGET(path, 0, d);
-			performance_plafonnee += fmin(0.1, (MGET(path, i, d) - So_d * PE_) / So_d);
-		}
-		dividende_prec = VLO_ * fmax(0.6 * dividende_prec/VLO_, performance_plafonnee / size_);
+		dividende_prec = VLO_ * fmax(0.6 * dividende_prec/VLO_, GET(performances_plaf_, i));
 		pnl_vect_set(dividendes_, i, dividende_prec);
 	}
 }
@@ -82,6 +96,7 @@ double FCPMementis::payoff(const PnlMat *path) {
 	/* Remplit les différentes vecteurs nécessaires */
 	fill_performances(path);
 	PE();
+	fill_performances_plaf(path);
 	fill_dividendes(path);
 
 	// Vecteur du niveau de dividendes en pourcentage
@@ -89,8 +104,8 @@ double FCPMementis::payoff(const PnlMat *path) {
 	pnl_vect_div_scalar(niveau_div, VLO_);
 
 	double somme_dividende = pnl_vect_sum(niveau_div);
-	double mean_perf = pnl_vect_sum(performances_) / nbTimeSteps_;
-	double plus_value = fmax(mean_perf - somme_dividende, 0);
+	double somme_perf = pnl_vect_sum(performances_plaf_);
+	double plus_value = fmax(somme_perf - somme_dividende, 0);
 
 	return VLO_ * (1 + plus_value);
 }

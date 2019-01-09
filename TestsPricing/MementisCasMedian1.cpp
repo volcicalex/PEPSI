@@ -27,6 +27,8 @@ TEST(propMementis, CasMedian1) {
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->performances_, perf_theorique, 0.001));
 
+	mementis->fill_performances_plaf(path);
+
 	printf("--- Point d'entree --- \n");
 
 	mementis->PE();

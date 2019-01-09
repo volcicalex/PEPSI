@@ -27,6 +27,8 @@ TEST(propMementis, CasDefavorable) {
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->performances_, perf_theorique, 0.001));
 
+	mementis->fill_performances_plaf(path);
+
 	printf("--- Point d'entree --- \n");
 
 	mementis->PE();
@@ -56,5 +58,4 @@ TEST(propMementis, CasDefavorable) {
 	ASSERT_LE(payoff, payoff_theorique + 0.001);
 	ASSERT_GE(payoff, payoff_theorique - 0.001);
 
-	/* 04/01/19 : soucis dans le calcul du payoff,  erreur dans la formule ou dans la brochure ? */
 }

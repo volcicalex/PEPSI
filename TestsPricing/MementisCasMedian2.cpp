@@ -22,8 +22,8 @@ TEST(propMementis, CasMedian2) {
 	mementis->fill_performances(path);
 
 	// Resultats calcules dans un fichier excel annexe
-	const PnlVect *perf_theorique = pnl_vect_create_from_list(13, 0.000000, 0.917200, 0.930400, 0.911600, 0.911200, 0.960800, 1.019200, 
-		1.046400, 1.074000, 1.115200, 1.123200, 1.065600, 1.029600);
+	const PnlVect *perf_theorique = pnl_vect_create_from_list(13, 0.000000, 1.075600, 1.065600, 1.074000, 1.086000, 1.064800, 1.081600,
+		1.074800, 1.090800, 1.104400, 1.104000, 1.114000, 1.138400);
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->performances_, perf_theorique, 0.001));
 
@@ -32,18 +32,20 @@ TEST(propMementis, CasMedian2) {
 	mementis->PE();
 
 	// Resultat calcule dans un fichier excel annexe
-	double pe_theorique = 0.9112;
+	double pe_theorique = 1;
 
 	ASSERT_LE(mementis->PE_, pe_theorique + 0.001);
 	ASSERT_GE(mementis->PE_, pe_theorique - 0.001);
+
+	mementis->fill_performances_plaf(path);
 
 	printf("--- Dividendes --- \n");
 
 	mementis->fill_dividendes(path);
 
 	// Resultats calcules dans un fichier excel annexe
-	const PnlVect *div_theorique = pnl_vect_create_from_list(13, 0.000000, 5.600000, 5.600000, 5.600000, 5.600000, 4.804801, 6.667200,
-		9.641600, 9.950400, 9.910399, 9.955199, 9.955199, 8.392002);
+	const PnlVect *div_theorique = pnl_vect_create_from_list(13, 0.000000, 5.600000, 5.600000, 5.600000, 5.600000, 5.640000, 6.919999, 6.680001,
+		8.440000, 9.279999, 9.199999, 9.120000, 9.520001);
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->dividendes_, div_theorique, 0.001));
 
@@ -51,7 +53,7 @@ TEST(propMementis, CasMedian2) {
 	double payoff = mementis->payoff(path);
 
 	// Resultat calcule dans un fichier excel annexe
-	double payoff_theorique = 100;
+	double payoff_theorique = 103.52;
 
 	ASSERT_LE(payoff, payoff_theorique + 0.001);
 	ASSERT_GE(payoff, payoff_theorique - 0.001);
