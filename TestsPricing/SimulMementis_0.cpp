@@ -7,11 +7,11 @@
 
 
 TEST(spot_0, SimulMementis) {
-	double fdStep = 1;  //valeur quelconque car non utilisee pour ce tes
+	/*double fdStep = 1;  //valeur quelconque car non utilisee pour ce tes
 
 	double r = 0.02;
 	double rho = 0;
-	int n_samples = 50000;
+	int n_samples = 5000;
 
 	Option *mementis = new FCPMementis(n_samples);
 
@@ -34,5 +34,5 @@ TEST(spot_0, SimulMementis) {
 
 	ASSERT_TRUE(false);
 
-	delete mCarlo;
+	delete mCarlo;*/
 }

@@ -17,7 +17,7 @@ TEST(delta_0, DeltaBasket_2) {
 	double correlation = 0.7;
 	int size = 40;
 	int nbTimeSteps = 1;
-	int n_samples = 50000;
+	int n_samples = 5000;
 
 	PnlVect *spot = pnl_vect_create_from_scalar(size, 100.0);
 	PnlVect *sigma = pnl_vect_create_from_scalar(size, 0.2);
