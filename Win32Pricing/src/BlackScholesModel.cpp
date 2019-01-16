@@ -98,7 +98,7 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 		/* Si t n'est pas un pas de discrétisation alors on simule le prochain pas */
 		if (shiftStep != 0.0) {
 			pnl_mat_get_row(Gi, G, 0);
-			st = MGET(past, nextIndex - 1, d) * exp((r_ - pow(sigma, 2) / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
+			st = MGET(past, nextIndex, d) * exp((r_ - pow(sigma, 2) / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
 			pnl_mat_set(path, nextIndex, d, st);
 		}
 
