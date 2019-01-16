@@ -43,19 +43,32 @@ TEST(propMementis, CasDefavorable) {
 
 	mementis->fill_dividendes(path);
 
+
 	// Resultats calcules dans un fichier excel annexe
 	const PnlVect *div_theorique = pnl_vect_create_from_list(13, 0.000000, 5.600000, 5.600000, 5.600000, 5.600000, 3.360000,
 		2.016000, 1.209600, 0.725760, 0.435456, 0.261274, 0.156764, 0.094058);
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->dividendes_, div_theorique, 0.001));
 
-	printf("--- Payoff --- \n");
+	printf("--- Payoff echeance --- \n");
+	double remb_echeance = mementis->remboursement_echeance(path);
+
+	// Resultat calcule dans un fichier excel annexe
+	double remb_echeance_theorique = 100;
+
+	ASSERT_LE(remb_echeance, remb_echeance_theorique + 0.001);
+	ASSERT_GE(remb_echeance, remb_echeance_theorique - 0.001);
+
+	printf("--- Gains actualises --- \n");
+
 	double payoff = mementis->payoff(path);
 
 	// Resultat calcule dans un fichier excel annexe
-	double payoff_theorique = 100;
+	// double payoff_theorique = 100;
 
-	ASSERT_LE(payoff, payoff_theorique + 0.001);
-	ASSERT_GE(payoff, payoff_theorique - 0.001);
+	//ASSERT_LE(remb_echeance, payoff_theorique + 0.001);
+	//ASSERT_GE(remb_echeance, payoff_theorique - 0.001);
+
+	printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
 
 }

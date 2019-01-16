@@ -9,6 +9,9 @@ FCPMementis::FCPMementis(int nbTimeSteps) {
 	size_ = 25;
 	weights_ = pnl_vect_create_from_scalar(size_, 0.04);
 
+	/* Taux continu calcule a partir du taux annuel donne dans la brochure*/
+	taux_capitalisation_ = log(1+0.042);
+
 	VLO_ = 100;
 	dividendes_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
 	performances_ = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
@@ -84,14 +87,14 @@ void FCPMementis::fill_dividendes(const PnlMat *path) {
 }
 
 /**
-* Calcule la valeur du remboursement sur la trajectoire
+* Calcule la valeur de la plus value sur la trajectoire
 *
 * @param[in] path est une matrice de taille (N+1) x d
 * contenant une trajectoire du modèle telle que créée
 * par la fonction asset.
-* @return payoff = phi(trajectoire)
+* @return plus value
 */
-double FCPMementis::payoff(const PnlMat *path) {
+double FCPMementis::calcul_plus_value(const PnlMat *path) {
 
 	/* Remplit les différentes vecteurs nécessaires */
 	fill_performances(path);
@@ -105,7 +108,54 @@ double FCPMementis::payoff(const PnlMat *path) {
 
 	double somme_dividende = pnl_vect_sum(niveau_div);
 	double somme_perf = pnl_vect_sum(performances_plaf_);
-	double plus_value = fmax(somme_perf - somme_dividende, 0);
+	return fmax(somme_perf - somme_dividende, 0);
+}
+
+
+/**
+* Calcule la valeur du gain total de l'investisseur sur la trajectoire
+*
+* @param[in] path est une matrice de taille (N+1) x d
+* contenant une trajectoire du modèle telle que créée
+* par la fonction asset.
+* @return remboursement comprenant dividendes 
+*/
+double FCPMementis::payoff(const PnlMat *path) {
+
+	double plus_value = calcul_plus_value(path);
+	
+	PnlVect *flux_capitalises = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
+
+
+	for (int annee = 0; annee < nbTimeSteps_; annee++)
+	{
+		pnl_vect_set(flux_capitalises, annee, GET(dividendes_, annee)*exp(taux_capitalisation_*(T_-annee)));
+		/*printf("iteration %i \n", annee);
+		printf("dividende : %f \n", GET(dividendes_, annee));
+		printf("temps : %f \n", T_-annee);
+
+		printf("taux : %f \n", taux_capitalisation_);
+		pnl_vect_print(flux_capitalises);*/
+	}
+	pnl_vect_set(flux_capitalises, nbTimeSteps_, (GET(dividendes_, nbTimeSteps_)+ VLO_ * (1 + plus_value)));
+	/*printf("iteration %i \n", nbTimeSteps_);
+	pnl_vect_print(flux_capitalises);*/
+	return pnl_vect_sum(flux_capitalises);
+}
+
+
+
+/**
+* Calcule la valeur du remboursement sur la trajectoire
+*
+* @param[in] path est une matrice de taille (N+1) x d
+* contenant une trajectoire du modèle telle que créée
+* par la fonction asset.
+* @return payoff = phi(trajectoire)
+*/
+double FCPMementis::remboursement_echeance(const PnlMat *path) {
+
+	double plus_value = calcul_plus_value(path);
 
 	return VLO_ * (1 + plus_value);
 }

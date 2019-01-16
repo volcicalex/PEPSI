@@ -10,6 +10,9 @@ public:
 	/* Point d'entrée */
 	float PE_;
 
+	/* Taux de capitalisation des dividendes */
+	double taux_capitalisation_;
+
 	/* Vecteur de performances */
 	PnlVect *performances_;
 
@@ -43,6 +46,26 @@ public:
 	 * Remplit le vecteur de dividendes pour chaque année
 	 */
 	void fill_dividendes(const PnlMat *path);
+	
+	/**
+	* Calcule la valeur de la plus value sur la trajectoire
+	*
+	* @param[in] path est une matrice de taille (N+1) x d
+	* contenant une trajectoire du modèle telle que créée
+	* par la fonction asset.
+	* @return plus value
+	*/
+	double calcul_plus_value(const PnlMat *path);
+
+	/**
+	* Calcule la valeur du gain total de l'investisseur sur la trajectoire
+	*
+	* @param[in] path est une matrice de taille (N+1) x d
+	* contenant une trajectoire du modèle telle que créée
+	* par la fonction asset.
+	* @return remboursement comprenant dividendes
+	*/
+	double payoff(const PnlMat *path) override;
 
 	/**
 	 * Calcule la valeur du remboursement sur la trajectoire
@@ -52,5 +75,6 @@ public:
 	 * par la fonction asset.
 	 * @return phi(trajectoire)
 	 */
-	double payoff(const PnlMat *path) override;
+	double remboursement_echeance(const PnlMat *path);
+
 };

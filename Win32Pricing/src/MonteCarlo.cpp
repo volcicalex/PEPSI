@@ -36,10 +36,9 @@ void MonteCarlo::price(double &prix, double &ic) {
 		mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng_);
 		payoff = opt_->payoff(path);
 		prix += payoff;
-		esp_carre += pow(payoff, 2);
+		esp_carre += payoff*payoff;
 	}
-
-	double estimateur_carre = exp(-2 * mod_->r_*opt_->T_)*(esp_carre / nbSamples_ - pow(prix / nbSamples_, 2));
+	double estimateur_carre = exp(-2 * mod_->r_*opt_->T_)*(esp_carre / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
 	prix *= exp(-mod_->r_*opt_->T_) / nbSamples_;
 	ic = 1.96 * sqrt(estimateur_carre / nbSamples_);
 
@@ -69,10 +68,10 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
 		mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
 		payoff = opt_->payoff(path);
 		prix += payoff;
-		esp_carre += pow(payoff, 2);
+		esp_carre += payoff*payoff;
 	}
 
-	double estimateur_carre = exp(-2 * mod_->r_*(opt_->T_ - t))*(esp_carre / nbSamples_ - pow(prix / nbSamples_, 2));
+	double estimateur_carre = exp(-2 * mod_->r_*(opt_->T_ - t))*(esp_carre / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
 	prix *= exp(-mod_->r_*(opt_->T_ - t)) / nbSamples_;
 	ic = 1.96 * sqrt(estimateur_carre / nbSamples_);
 
@@ -124,12 +123,12 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *co
 			payoff_decrement = opt_->payoff(decrement_path);
 
 			sum += payoff_increment - payoff_decrement;
-			sum2 += pow(payoff_increment - payoff_decrement, 2);
+			sum2 += (payoff_increment - payoff_decrement)*(payoff_increment - payoff_decrement);
 
 		}
 
 		pnl_vect_set(delta, d, coefficient * sum / nbSamples_);
-		standard_dev = coefficient * sqrt(sum2 / nbSamples_ - pow(sum / nbSamples_, 2));
+		standard_dev = coefficient * sqrt(sum2 / nbSamples_ - (sum / nbSamples_)*(sum / nbSamples_));
 		pnl_vect_set(conf_delta, d, standard_dev / sqrt(nbSamples_));
 
 	}

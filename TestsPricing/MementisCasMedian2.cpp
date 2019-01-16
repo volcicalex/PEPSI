@@ -49,14 +49,25 @@ TEST(propMementis, CasMedian2) {
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->dividendes_, div_theorique, 0.001));
 
-	printf("--- Payoff --- \n");
+	printf("--- Payoff echeance --- \n");
+	double remb_echeance = mementis->remboursement_echeance(path);
+
+	// Resultat calcule dans un fichier excel annexe
+	double remb_echeance_theorique = 103.52;
+
+	ASSERT_LE(remb_echeance, remb_echeance_theorique + 0.001);
+	ASSERT_GE(remb_echeance, remb_echeance_theorique - 0.001);
+
+	printf("--- Gains actualises --- \n");
+
 	double payoff = mementis->payoff(path);
 
 	// Resultat calcule dans un fichier excel annexe
-	double payoff_theorique = 103.52;
+	// double payoff_theorique = 100;
 
-	ASSERT_LE(payoff, payoff_theorique + 0.001);
-	ASSERT_GE(payoff, payoff_theorique - 0.001);
+	//ASSERT_LE(remb_echeance, payoff_theorique + 0.001);
+	//ASSERT_GE(remb_echeance, payoff_theorique - 0.001);
 
-	/* 04/01/19 : soucis dans le calcul du payoff, erreur dans la formule ou dans la brochure ? */
+	printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
+
 }
