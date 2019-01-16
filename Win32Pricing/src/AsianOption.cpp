@@ -29,11 +29,6 @@ AsianOption::AsianOption(double T, int nbTimeSteps, int size, PnlVect* weights, 
  * @return phi(trajectoire)
  */
 double AsianOption::payoff(const PnlMat *path) {
-	double sum = 0;
-	PnlVect *meanPrice = pnl_vect_create(size_);
-	pnl_mat_sum_vect(meanPrice, path, 'r');
-	pnl_vect_mult_scalar(meanPrice, 1.0 / path->m);
-	sum = pnl_vect_scalar_prod(meanPrice, weights_);
-	pnl_vect_free(&meanPrice);
+	double sum = pnl_vect_sum(pnl_mat_mult_vect(path, weights_))/(nbTimeSteps_ + 1);
 	return fmax(sum - strike_, 0);
 }

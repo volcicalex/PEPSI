@@ -149,6 +149,7 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 
 	int H = marketPrice->m;
 	int discretisation = H / opt_->nbTimeSteps_;
+	int nextIndex = 0;
 
 	double delta_h = opt_->T_ / H;
 	double prix = 0;
@@ -159,10 +160,9 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 	PnlVect *price_vect = pnl_vect_create(opt_->size_);
 	PnlVect *last_delta = pnl_vect_create(opt_->size_);
 	PnlVect *delta = pnl_vect_create(opt_->size_);
-	PnlVect *diff_delta = pnl_vect_create(opt_->size_);
 	PnlVect *conf_delta = pnl_vect_create(opt_->size_);
 
-	PnlMat *market_subblock = pnl_mat_create_from_zero(opt_->nbTimeSteps_ + 1, opt_->size_);
+	PnlMat *market_subblock = pnl_mat_create(1, opt_->size_);
 	
 	/* Portefeuille de couverture en 0 */
 	pnl_mat_get_row(price_vect, marketPrice, 0);
@@ -177,22 +177,23 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 		pnl_vect_clone(last_delta, delta);
 		pnl_mat_get_row(price_vect, marketPrice, i);
 
-		if (i % discretisation == 0) pnl_mat_set_row(market_subblock, price_vect, i / discretisation);
-
+		if (i % discretisation == 1) {
+			pnl_mat_add_row(market_subblock, market_subblock->m, price_vect); 
+			nextIndex += 1;
+		}
+		else pnl_mat_set_row(market_subblock, price_vect, nextIndex);
+		
 		this->delta(market_subblock, i*delta_h, delta, conf_delta);
-		pnl_vect_clone(diff_delta, delta);
-		pnl_vect_minus_vect(diff_delta, last_delta);
-		hedge = hedge * actualisation - pnl_vect_scalar_prod(diff_delta, price_vect);
+		pnl_vect_minus_vect(last_delta, delta);
+		hedge = hedge * actualisation + pnl_vect_scalar_prod(last_delta, price_vect);
 
 	}
 
-	pnl_vect_plus_vect(delta, conf_delta);
 	pnl = hedge + pnl_vect_scalar_prod(delta, price_vect) - opt_->payoff(marketPrice);
 
 	pnl_vect_free(&price_vect);
 	pnl_vect_free(&last_delta);
 	pnl_vect_free(&delta);
-	pnl_vect_free(&diff_delta);
 	pnl_vect_free(&conf_delta);
 	pnl_mat_free(&market_subblock);
 }
