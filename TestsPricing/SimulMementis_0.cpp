@@ -21,11 +21,14 @@ TEST(spot_0, SimulMementis) {
 	PnlVect *spot = pnl_vect_create_from_scalar(mementis->size_, 100.000000);
 	PnlVect *trend = pnl_vect_create_from_zero(mementis->size_);
 
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(mementis->size_, mementis->size_, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
 	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
 	pnl_rng_sseed(rng, time(NULL));
 
-	Model *bsmodel = new BlackScholesModel(mementis->size_, r, rho, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(mementis->size_, r, rho_vect, sigma, spot, trend);
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, mementis, rng, fdStep, n_samples);
 
 	double prix = 0.0;
@@ -57,11 +60,14 @@ TEST(spot_0, SimulMementis2) {
 		154.13, 657.3, 103.18, 4307.29, 3862.34, 281.54, 6769.75, 24295.89, 4431.66, 1021.74, 448.29, 2224.68, 1545.99, 1272.41);
 	PnlVect *trend = pnl_vect_create_from_zero(mementis->size_);
 
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(mementis->size_, mementis->size_, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
 	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
 	pnl_rng_sseed(rng, time(NULL));
 
-	Model *bsmodel = new BlackScholesModel(mementis->size_, r, rho, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(mementis->size_, r, rho_vect, sigma, spot, trend);
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, mementis, rng, fdStep, n_samples);
 
 	double prix = 0.0;

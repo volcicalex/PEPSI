@@ -31,12 +31,14 @@ void MonteCarlo::price(double &prix, double &ic) {
 
 	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 	pnl_mat_set_row(path, mod_->spot_, 0);
+
 	for (int j = 0; j < nbSamples_; ++j) {
 		mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng_);
 		payoff = opt_->payoff(path);
 		prix += payoff;
 		esp_carre += pow(payoff, 2);
 	}
+
 	double estimateur_carre = exp(-2 * mod_->r_*opt_->T_)*(esp_carre / nbSamples_ - pow(prix / nbSamples_, 2));
 	prix *= exp(-mod_->r_*opt_->T_) / nbSamples_;
 	ic = 1.96 * sqrt(estimateur_carre / nbSamples_);
@@ -88,6 +90,8 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
  */
 void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *conf_delta) {
 
+	int lastIndex = floor(t * opt_->nbTimeSteps_ / opt_->T_);
+
 	double sum;
 	double sum2;
 	double timestep = opt_->T_ / (opt_->nbTimeSteps_);
@@ -107,7 +111,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *co
 
 		sum = 0;
 		sum2 = 0;
-		prix = MGET(past, past->m - 1, d);
+		prix = MGET(past, lastIndex, d);
 		coefficient = exp(-mod_->r_ * (opt_->T_ - t)) / (2 * fdStep_ * prix);
 
 		for (int i = 0; i < nbSamples_; i++) {
@@ -133,6 +137,64 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *co
 	pnl_mat_free(&path);
 	pnl_mat_free(&increment_path);
 	pnl_mat_free(&decrement_path);
+}
+
+/**
+* Profit and Loss
+* Calcul de l'erreur de couverture
+* @param[out]  pnl : erreur de couverture
+* @param[in] marketPrice : disposition des trajectoires de marché
+*/
+void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
+
+	int H = marketPrice->m;
+	int discretisation = H / opt_->nbTimeSteps_;
+
+	double delta_h = opt_->T_ / H;
+	double prix = 0;
+	double ic = 0;
+	double hedge;
+	double actualisation = exp(mod_->r_ * opt_->T_ / H);
+
+	PnlVect *price_vect = pnl_vect_create(opt_->size_);
+	PnlVect *last_delta = pnl_vect_create(opt_->size_);
+	PnlVect *delta = pnl_vect_create(opt_->size_);
+	PnlVect *diff_delta = pnl_vect_create(opt_->size_);
+	PnlVect *conf_delta = pnl_vect_create(opt_->size_);
+
+	PnlMat *market_subblock = pnl_mat_create_from_zero(opt_->nbTimeSteps_ + 1, opt_->size_);
+	
+	/* Portefeuille de couverture en 0 */
+	pnl_mat_get_row(price_vect, marketPrice, 0);
+	pnl_mat_set_row(market_subblock, price_vect, 0);
+	this->price(prix, ic);
+	this->delta(market_subblock, 0, delta, conf_delta);
+
+	hedge = prix - pnl_vect_scalar_prod(delta, price_vect);
+
+	for (int i = 1; i < H; i++) {
+
+		pnl_vect_clone(last_delta, delta);
+		pnl_mat_get_row(price_vect, marketPrice, i);
+
+		if (i % discretisation == 0) pnl_mat_set_row(market_subblock, price_vect, i / discretisation);
+
+		this->delta(market_subblock, i*delta_h, delta, conf_delta);
+		pnl_vect_clone(diff_delta, delta);
+		pnl_vect_minus_vect(diff_delta, last_delta);
+		hedge = hedge * actualisation - pnl_vect_scalar_prod(diff_delta, price_vect);
+
+	}
+
+	pnl_vect_plus_vect(delta, conf_delta);
+	pnl = hedge + pnl_vect_scalar_prod(delta, price_vect) - opt_->payoff(marketPrice);
+
+	pnl_vect_free(&price_vect);
+	pnl_vect_free(&last_delta);
+	pnl_vect_free(&delta);
+	pnl_vect_free(&diff_delta);
+	pnl_vect_free(&conf_delta);
+	pnl_mat_free(&market_subblock);
 }
 
 MonteCarlo::~MonteCarlo()

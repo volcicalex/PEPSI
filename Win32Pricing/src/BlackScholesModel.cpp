@@ -7,12 +7,12 @@
 * Constructeur de la classe
 * @param[in] size : nombre d'actifs du modèle
 * @param[in]  r : taux d'intérêt
-* @param[in]  rho : paramètre de corrélation
+* @param[in]  rho : matrice de corrélation
 * @param[in]  sigma : vecteur de volatilités
 * @param[in]  spot : valeurs initiales des sous-jacents
 * @param[in]  trend : tendance du modèle
 */
-BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
+BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
 
 	size_ = size;
 	r_ = r;
@@ -21,8 +21,8 @@ BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *si
 	spot_ = spot;
 	trend_ = trend;
 
-	this->L = pnl_mat_create_from_scalar(size_, size_, rho_);
-	pnl_mat_set_diag(L, 1, 0);
+	L = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L, rho_);
 	pnl_mat_chol(L);
 	G = pnl_mat_new();
 	Gi = pnl_vect_new();
@@ -98,7 +98,7 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 		/* Si t n'est pas un pas de discrétisation alors on simule le prochain pas */
 		if (shiftStep != 0.0) {
 			pnl_mat_get_row(Gi, G, 0);
-			st = MGET(past, nextIndex, d) * exp((r_ - pow(sigma, 2) / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
+			st = MGET(past, nextIndex - 1, d) * exp((r_ - pow(sigma, 2) / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
 			pnl_mat_set(path, nextIndex, d, st);
 		}
 
@@ -136,6 +136,44 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path, int d
 	for (int i = nbSteps; i < path->m; i++) {
 		pnl_mat_set(shift_path, i, d, (1 + h) * MGET(path, i, d));
 	}
+
+}
+
+/**
+	* Simulation du marché (simulation du modèle sous la probabilité historique)
+	* @param[out] simulatedMarket : contient les valeurs simulées du marché
+	* @param[in]  T : maturité
+	* @param[in]  H : nombre de pas de simulation
+	* @param[in] rng : générateur de nombres aléatoires
+	*/
+void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  PnlRng *rng) {
+
+	double step = T / H;
+	double sqrt_step = sqrt(step);
+	double sigma;
+	double expo_t;
+	double Wt;
+	double st;
+	double trend_d;
+
+	pnl_mat_rng_normal(G, H, size_, rng);
+
+	for (int d = 0; d < size_; d++) {
+
+		pnl_mat_get_row(Ld, L, d);
+		sigma = pnl_vect_get(sigma_, d);
+		trend_d = pnl_vect_get(trend_, d);
+		expo_t = exp((trend_d- pow(sigma, 2) / 2) * step);
+		Wt = sigma * sqrt_step;
+
+		for (int i = 1; i < H + 1; i++) {
+
+			pnl_mat_get_row(Gi, G, i - 1);
+			st = MGET(simulatedMarket, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi, Ld));
+			pnl_mat_set(simulatedMarket, i, d, st);
+
+		}
+	}
 }
 
 /* Destructeur pour le modele de BlackScholes */
@@ -144,6 +182,7 @@ BlackScholesModel::~BlackScholesModel()
 	pnl_vect_free(&sigma_);
 	pnl_vect_free(&spot_);
 	pnl_vect_free(&trend_);
+	pnl_mat_free(&rho_);
 	pnl_mat_free(&L);
 	pnl_mat_free(&G);
 	pnl_vect_free(&Ld);

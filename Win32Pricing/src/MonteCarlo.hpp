@@ -61,6 +61,14 @@ public:
 	 */
 	void delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *conf_delta);
 
+	/**
+	* Profit and Loss
+	* Calcul de l'erreur de couverture
+	* @param[out]  pnl : erreur de couverture
+	* @param[in] marketPrice : disposition des trajectoires de marché
+	*/
+	void pnl(double& pnl, PnlMat *marketPrice);
+
 	/* destructeur pour la classe MonteCarlo */
 	~MonteCarlo();
 

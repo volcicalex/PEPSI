@@ -21,12 +21,12 @@ public:
 	* Constructeur de la classe
 	* @param[in] size : nombre d'actifs du modèle
 	* @param[in]  r : taux d'intérêt
-	* @param[in]  rho : paramètre de corrélation
+	* @param[in]  rho : matrice de correlation
 	* @param[in]  sigma : vecteur de volatilités
 	* @param[in]  spot : valeurs initiales des sous-jacents
 	* @param[in]  trend : tendance du modèle
 	*/
-	BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend);
+	BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend);
 
 	/**
 	 * Génère une trajectoire du modèle et la stocke dans path
@@ -68,6 +68,15 @@ public:
 	 * @param[in] timestep pas de constatation du sous-jacent
 	 */
 	void shiftAsset(PnlMat *shift_path, const PnlMat *path, int d, double h, double t, double timestep) override;
+
+	/**
+	* Simulation du marché (simulation du modèle sous la probabilité historique)
+	* @param[out] simulatedMarket : contient les valeurs simulées du marché
+	* @param[in]  T : maturité
+	* @param[in]  H : nombre de pas de simulation
+	* @param[in] rng : générateur de nombres aléatoires
+	*/
+	void simul_market(PnlMat *simulatedMarket, double T, int H, PnlRng *rng) override;
 
 	/* Destructeur pour le model de BlackScholes */
 	~BlackScholesModel();

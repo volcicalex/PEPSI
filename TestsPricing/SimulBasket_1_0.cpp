@@ -25,7 +25,10 @@ TEST(spot_0, SimulBasket_1) {
 	PnlVect *payoff_coef = pnl_vect_create_from_scalar(size, 0.025);
 	PnlVect *trend = pnl_vect_create_from_zero(size);
 
-	Model *bsmodel = new BlackScholesModel(size, r, correlation, sigma, spot, trend);
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(size, size, correlation);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
+	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
 	Option *bOption = new BasketOption(T, timestep, size, payoff_coef, strike);
 	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
 	//

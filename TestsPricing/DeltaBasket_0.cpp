@@ -24,6 +24,9 @@ TEST(delta_0, DeltaBasket) {
 	PnlVect *payoff_coef = pnl_vect_create_from_scalar(size, 0.025);
 	PnlVect *trend = pnl_vect_create_from_zero(size);
 
+	PnlMat *rho = pnl_mat_create_from_scalar(size, size, correlation);
+	pnl_mat_set_diag(rho, 1, 0);
+
 	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
 	pnl_rng_sseed(rng, time(NULL));
@@ -32,7 +35,7 @@ TEST(delta_0, DeltaBasket) {
 	PnlVect *delta = pnl_vect_create(size);
 	PnlVect *conf_delta = pnl_vect_create(size);
 
-	Model *bsmodel = new BlackScholesModel(size, r, correlation, sigma, spot, trend);
+	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
 	Option *aOption = new BasketOption(T, nbTimeSteps, size, payoff_coef, strike);
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, aOption, rng, fdStep, n_samples);
 

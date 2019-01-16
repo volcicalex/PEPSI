@@ -1,10 +1,6 @@
-//
-// Created by Yasmine Tidane on 21/09/2018.
-//
-
 #include "Couverture.hpp"
 
-Couverture::Couverture(AbstractPricer *pricer)
+Couverture::Couverture(MonteCarlo *pricer)
 {
     pricer_ = pricer;
 }
@@ -63,7 +59,7 @@ void Couverture::profits_and_losses(const PnlMat *market_trajectory, double &p_a
         // v = V(i-1) * exp(rT/H) - (delta(i) - delta(i-1)) * S(tho_i)
         v = v * actualisationFactor - pnl_vect_scalar_prod(diff_delta, spots);
         if ((i%step_for_payoff != 0) && (i !=H) ){          
-            pnl_mat_del_row(past, past->m - 1, tmp_row);
+            pnl_mat_del_row(past, past->m - 1);
         }
     }   
     p_and_l = v + pnl_vect_scalar_prod(deltas, spots) - pricer_->opt_->payoff(past);

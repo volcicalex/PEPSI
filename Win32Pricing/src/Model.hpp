@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "pnl/pnl_random.h"
 #include "pnl/pnl_matrix.h"
@@ -7,13 +7,13 @@
 class Model
 {
 public:
-	/*! nombre d'actifs du modèle */
+	/*! nombre d'actifs du modÃ¨le */
 	int size_;
-	/*! taux d'intérêt */
+	/*! taux d'intÃ©rÃªt */
 	double r_;
-	/*!  paramètre de corrélation */
-	double rho_;
-	/*! vecteur de volatilités */
+	/*!  matrice de corrÃ©lation */
+	PnlMat *rho_;
+	/*! vecteur de volatilitÃ©s */
 	PnlVect *sigma_;
 	/*!  valeurs initiales des sous-jacents */
 	PnlVect *spot_;
@@ -21,11 +21,11 @@ public:
 	PnlVect *trend_;
 
 	/**
-	 * Génère une trajectoire du modèle et la stocke dans path
+	 * GÃ©nÃ¨re une trajectoire du modÃ¨le et la stocke dans path
 	 *
-	 * @param[out] path contient une trajectoire du modèle.
+	 * @param[out] path contient une trajectoire du modÃ¨le.
 	 * C'est une matrice de taille (nbTimeSteps+1) x d
-	 * @param[in] T  maturité
+	 * @param[in] T  maturitÃ©
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] nbTimeSteps nombre de dates de constatation
 	 */
@@ -33,16 +33,16 @@ public:
 
 	/**
 	 * Calcule une trajectoire du sous-jacent connaissant le
-	 * passé jusqu' à la date t
+	 * passÃ© jusqu' Ã  la date t
 	 *
 	 * @param[out] path  contient une trajectoire du sous-jacent
-	 * donnée jusqu'à l'instant t par la matrice past
-	 * @param[in] t date jusqu'à laquelle on connait la trajectoire.
-	 * t n'est pas forcément une date de discrétisation
+	 * donnÃ©e jusqu'Ã  l'instant t par la matrice past
+	 * @param[in] t date jusqu'Ã  laquelle on connait la trajectoire.
+	 * t n'est pas forcÃ©ment une date de discrÃ©tisation
 	 * @param[in] nbTimeSteps nombre de pas de constatation
-	 * @param[in] T date jusqu'à laquelle on simule la trajectoire
+	 * @param[in] T date jusqu'Ã  laquelle on simule la trajectoire
 	 * @param[in] rng generateur de nombres aleatoires
-	 * @param[in] past trajectoire réalisée jusqu'a la date t
+	 * @param[in] past trajectoire rÃ©alisÃ©e jusqu'a la date t
 	 */
 	virtual void asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) = 0;
 
@@ -52,12 +52,21 @@ public:
 	 * @param[in]  path contient en input la trajectoire
 	 * du sous-jacent
 	 * @param[out] shift_path contient la trajectoire path
-	 * dont la composante d a été shiftée par (1+h)
-	 * à partir de la date t.
-	 * @param[in] t date à partir de laquelle on shift
-	 * @param[in] h pas de différences finies
-	 * @param[in] d indice du sous-jacent à shifter
+	 * dont la composante d a Ã©tÃ© shiftÃ©e par (1+h)
+	 * Ã  partir de la date t.
+	 * @param[in] t date Ã  partir de laquelle on shift
+	 * @param[in] h pas de diffÃ©rences finies
+	 * @param[in] d indice du sous-jacent Ã  shifter
 	 * @param[in] timestep pas de constatation du sous-jacent
 	 */
 	virtual void shiftAsset(PnlMat *shift_path, const PnlMat *path, int d, double h, double t, double timestep) = 0;
+
+	/**
+	* Simulation du marcheÌ (simulation du modeÌ€le sous la probabiliteÌ historique)
+	* @param[out] simulatedMarket : contient les valeurs simulÃ©es du marchÃ©
+	* @param[in]  T : maturitÃ©
+	* @param[in]  H : nombre de pas de simulation
+	* @param[in] rng : gÃ©nÃ©rateur de nombres alÃ©atoires
+	*/
+	virtual void simul_market(PnlMat *simulatedMarket, double T, int H, PnlRng *rng) = 0;
 };

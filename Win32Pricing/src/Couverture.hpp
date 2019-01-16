@@ -1,16 +1,12 @@
-#ifndef PROJETPRICERGIT_COUVERTURE_HPP
-#define PROJETPRICERGIT_COUVERTURE_HPP
-
-
-#include "AbstractPricer.hpp"
+#include "MonteCarlo.hpp"
 
 class Couverture {
 public:
 
-    AbstractPricer *pricer_;
+    MonteCarlo *pricer_;
     int H_;
 
-    Couverture(AbstractPricer *pricer_);
+    Couverture(MonteCarlo *pricer_);
 
     ~Couverture();
 
@@ -24,6 +20,3 @@ public:
     void profits_and_losses(const PnlMat *market_trajectory, double &p_and_l, double &pl_sur_P0);
 
 };
-
-
-#endif //PROJETPRICERGIT_COUVERTURE_HPP

@@ -34,7 +34,10 @@ TEST(spot_t, SimulBasket_2) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 0.025);
 
-	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(size, size, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
+	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
 	Option *basket = new BasketOption(T, nbTimeSteps, size, weights, strike);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
@@ -68,7 +71,7 @@ TEST(spot_t, SimulBasket_2) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho_vect, sigma, spot2, trend);
 	Option *basket2 = new BasketOption(T - t, nbTimeSteps - step, size, weights, strike);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, basket2, rng2, fdStep, n_samples);
 
@@ -114,7 +117,10 @@ TEST(spot_t, SimulBasket_2_2) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 1.0);
 
-	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(size, size, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
+	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
 	Option *basket = new BasketOption(T, nbTimeSteps, size, weights, strike);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
@@ -147,7 +153,7 @@ TEST(spot_t, SimulBasket_2_2) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho_vect, sigma, spot2, trend);
 	Option *basket2 = new BasketOption(T - t, nbTimeSteps - step, size, weights, strike);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, basket2, rng2, fdStep, n_samples);
 

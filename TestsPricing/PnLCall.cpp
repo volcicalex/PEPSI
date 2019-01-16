@@ -1,26 +1,34 @@
 #include "pch.h"
 
+#include "../Win32Pricing/src/Couverture.hpp"
 #include "../Win32Pricing/src/BlackScholesModel.hpp"
-#include "../Win32Pricing/src/MonteCarlo.hpp"
 #include "../Win32Pricing/src/CallOption.hpp"
-#include "pnl/pnl_finance.h"
 
+/**
+* Programme de test pour la couverture d'un Call
+*/
+TEST(PnL, pnlCall) {
 
-TEST(spot_0, SimulCall) {
-	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
+	const char *infile = "../data/market_call.dat";
+	PnlMat *callPath = pnl_mat_create_from_file(infile);
+
+	double fdStep = 0.1;
 
 	int size = 1;
-	double r = 0.02;
+	int nbTimeSteps = 1;
+	int n_samples = 100000;
+	int H = 150;
+
+	double r = 0.05;
 	double rho = 0;
-	double T = 1.0;
-	int nbTimeSteps = 365;
+	double T = 0.5;
 	double strike = 100;
-	int n_samples = 50000;
+	double pnl = 0;
 
 	PnlVect *sigma = pnl_vect_create_from_scalar(size, 0.200000);
 	PnlVect *spot = pnl_vect_create_from_scalar(size, 100.000000);
-	PnlVect *trend = pnl_vect_create_from_zero(size);
-	PnlVect *weights = pnl_vect_create_from_scalar(size, 1.0);
+	PnlVect *trend = pnl_vect_create_from_scalar(size, 0.05);
+	PnlVect *weights = pnl_vect_create_from_scalar(1, 1.0);
 
 	PnlMat *rho_vect = pnl_mat_create_from_scalar(size, size, rho);
 	pnl_mat_set_diag(rho_vect, 1, 0);
@@ -29,16 +37,15 @@ TEST(spot_0, SimulCall) {
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
 	pnl_rng_sseed(rng, time(NULL));
 
-	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
+	BlackScholesModel *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
 	Option *call = new CallOption(T, nbTimeSteps, size, weights, strike);
+
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, call, rng, fdStep, n_samples);
 
-	double prix = 0.0;
-	double ic = 0.0;
-	mCarlo->price(prix, ic);
-	double prix2 = pnl_bs_call(100, strike, T, r, 0, 0.2);
+	mCarlo->pnl(pnl, callPath);
+	printf("P&L: %f\n", pnl);
 
-	GTEST_ASSERT_LE(abs(prix - prix2), ic);
+	pnl_mat_free(&callPath);
 
 	delete mCarlo;
 }

@@ -33,7 +33,10 @@ TEST(spot_t, SimulPerf) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 0.2);
 
-	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(size, size, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
+	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
 	Option *perf = new PerformanceOption(T, nbTimeSteps, size, weights);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
@@ -68,7 +71,7 @@ TEST(spot_t, SimulPerf) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho_vect, sigma, spot2, trend);
 	Option *perf2 = new PerformanceOption(T - t, nbTimeSteps - step, size, weights);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, perf2, rng2, fdStep, n_samples);
 
@@ -113,7 +116,10 @@ TEST(spot_t, SimulPerf2) {
 
 	PnlVect *weights = pnl_vect_create_from_scalar(size, 1.0);
 
-	Model *bsmodel = new BlackScholesModel(size, r, rho, sigma, spot, trend);
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(size, size, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
+	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
 	Option *perf = new PerformanceOption(T, nbTimeSteps, size, weights);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
@@ -146,7 +152,7 @@ TEST(spot_t, SimulPerf2) {
 	double prix2 = 0;
 	double ic2 = 0;
 
-	Model *bsmodel2 = new BlackScholesModel(size, r, rho, sigma, spot2, trend);
+	Model *bsmodel2 = new BlackScholesModel(size, r, rho_vect, sigma, spot2, trend);
 	Option *perf2 = new PerformanceOption(T - t, nbTimeSteps - step, size, weights);
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, perf2, rng2, fdStep, n_samples);
 
