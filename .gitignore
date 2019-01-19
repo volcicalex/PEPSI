@@ -34,3 +34,8 @@ x64/*
 *.exe
 *.out
 *.app
+Win32Pricing/Win32Pricing.vcxproj
+TestsPricing/pch.cpp
+TestsPricing/TestsPricing.vcxproj
+TestsPricing/x64/Debug/vc141.idb
+TestsPricing/x64/Debug/vc141.pdb

@@ -88,7 +88,7 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
  * @param[in] conf_delta contient le vecteur d'intervalle de confiance sur le calcul du delta
  */
 void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *conf_delta) {
-
+	/*
 	int lastIndex = floor(t * opt_->nbTimeSteps_ / opt_->T_);
 
 	double sum;
@@ -130,12 +130,66 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *co
 		pnl_vect_set(delta, d, coefficient * sum / nbSamples_);
 		standard_dev = coefficient * sqrt(sum2 / nbSamples_ - (sum / nbSamples_)*(sum / nbSamples_));
 		pnl_vect_set(conf_delta, d, standard_dev / sqrt(nbSamples_));
+		
 
 	}
 
 	pnl_mat_free(&path);
 	pnl_mat_free(&increment_path);
 	pnl_mat_free(&decrement_path);
+	*/
+	
+	PnlVect *diff = pnl_vect_create_from_double(past->n, 0);
+	PnlVect *diff_square = pnl_vect_create_from_double(past->n, 0);
+
+	double ic_d = 0;
+	double delta_d;
+	double epsilon_d_2;
+
+	double timestep = opt_->T_ / opt_->nbTimeSteps_;
+	int lastIndex = floor(t / timestep);
+	double prix;
+	double payoff_increment;
+	double payoff_decrement;
+	double standard_dev;
+	double actualisation = exp((-mod_->r_ * (opt_->T_ - t)));
+
+	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+	PnlMat *increment_path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+	PnlMat *decrement_path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+
+	pnl_mat_set_subblock(path, past, 0, 0);
+
+	for (int j = 0; j < nbSamples_; j++)
+	{
+		mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
+		for (int d = 0; d < past->n; d++)
+		{
+			mod_->shiftAsset(increment_path, path, d, fdStep_, t, timestep);
+			mod_->shiftAsset(decrement_path, path, d, -fdStep_, t, timestep);
+			payoff_increment = opt_->payoff(increment_path);
+			payoff_decrement = opt_->payoff(decrement_path);
+			pnl_vect_set(diff, d, pnl_vect_get(diff, d) + payoff_increment - payoff_decrement);
+			pnl_vect_set(diff_square, d, pnl_vect_get(diff_square, d) + SQR(payoff_increment - payoff_decrement));
+		}
+	}
+
+	for (int d = 0; d < past->n; d++)
+	{
+		prix = MGET(past, lastIndex, d);
+		delta_d = actualisation * pnl_vect_get(diff, d) / (2 * nbSamples_ * fdStep_ * prix);
+		pnl_vect_set(delta, d, delta_d);
+		double lambda = (exp((-2 * mod_->r_ * (opt_->T_ - t)))) / (SQR(prix));
+		epsilon_d_2 = lambda * ((1.0 / nbSamples_) * pnl_vect_get(diff_square, d) - SQR((1.0 / nbSamples_) * pnl_vect_get(diff, d)));
+		ic_d = sqrt(epsilon_d_2 / nbSamples_);
+		pnl_vect_set(conf_delta, d, ic_d);
+	}
+	pnl_vect_free(&diff);
+	pnl_vect_free(&diff_square);
+	pnl_mat_free(&path);
+	pnl_mat_free(&increment_path);
+	pnl_mat_free(&decrement_path);
+	
 }
 
 /**
