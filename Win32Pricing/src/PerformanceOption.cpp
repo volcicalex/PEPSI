@@ -6,9 +6,9 @@
 
 /**
 * Constructeur de la classe
-* @param[in] T : maturité
-* @param[in] nbTimeSteps : nombre de pas de temps de discrétisation
-* @param[in] size : dimension du modèle
+* @param[in] T : maturitÃ©
+* @param[in] nbTimeSteps : nombre de pas de temps de discrÃ©tisation
+* @param[in] size : dimension du modÃ¨le
 * @param[in] weights : poids des actifs
 */
 PerformanceOption::PerformanceOption(double T, int nbTimeSteps, int size, PnlVect* weights) {
@@ -22,7 +22,7 @@ PerformanceOption::PerformanceOption(double T, int nbTimeSteps, int size, PnlVec
  * Calcule la valeur du payoff sur la trajectoire
  *
  * @param[in] path est une matrice de taille (N+1) x d
- * contenant une trajectoire du modèle telle que créée
+ * contenant une trajectoire du modÃ¨le telle que crÃ©Ã©e
  * par la fonction asset.
  * @return phi(trajectoire)
  */
@@ -40,23 +40,5 @@ double PerformanceOption::payoff(const PnlMat *path) {
 	}
 	return payOff;
 	pnl_vect_free(&vecteur);
-	
-	/*
-	double payOff = 1;
-	PnlVect* vecteur = pnl_mat_mult_vect(path, weights_);
-
-	PnlVect* vecteur2 = pnl_vect_create_subvect(vecteur, 1, vecteur->size-1);
-	pnl_vect_resize(vecteur2, vecteur->size);
-	pnl_vect_div_vect_term(vecteur2,vecteur);
-
-	for (int i = 1; i <= nbTimeSteps_; i++)
-	{	
-		payOff += fmax(pnl_vect_get(vecteur2, i-1) - 1.0, 0.0);
-	}
-	return payOff;
-	pnl_vect_free(&vecteur);
-	pnl_vect_free(&vecteur2);
-	*/
-
 }
 
