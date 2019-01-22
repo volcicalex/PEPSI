@@ -29,5 +29,5 @@ CallOption::CallOption(double T, int nbTimeSteps, int size, PnlVect* weights, do
  * @return phi(trajectoire)
  */
 double CallOption::payoff(const PnlMat *path) {
-	return fmax(pnl_mat_get(path, path->m - 1, 0) - strike_, 0);
+	return fmax(pnl_mat_get(path, nbTimeSteps_, 0) - strike_, 0);
 }

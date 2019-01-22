@@ -8,7 +8,7 @@ TEST(PnL, pnlBasket) {
 	const char *infile = "../data/market_basket.dat";
 	PnlMat *Path = pnl_mat_create_from_file(infile);
 
-	int nbTimeSteps = 1;
+	int nbTimeSteps = 25;
 	int size = 10;
 	int n_samples = 50000;
 	int H = 150;
