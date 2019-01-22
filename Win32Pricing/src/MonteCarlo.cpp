@@ -211,8 +211,6 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 	int nextIndex = 0;
 
 	double delta_h = opt_->T_ / H;
-	double delta_t = opt_->T_ / opt_->nbTimeSteps_;
-	double t = 0;
 	double prix = 0;
 	double ic = 0;
 	double hedge;
@@ -244,8 +242,7 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 		}
 		else pnl_mat_set_row(market_subblock, price_vect, nextIndex);
 		
-		t = (i % discretisation == 0) ? nextIndex * delta_t : i * delta_h;
-		this->delta(market_subblock, t, delta, conf_delta);		
+		this->delta(market_subblock, i * delta_h, delta, conf_delta);		
 		pnl_vect_minus_vect(last_delta, delta);
 		hedge = hedge * actualisation + pnl_vect_scalar_prod(last_delta, price_vect);
 
