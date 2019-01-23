@@ -15,3 +15,6 @@ Profiling:
 - Lancer l'éxecutable [nom_executable]. Cela crée un fichier gmon.out.  
 - Lancer la commande gprof ./nom_executable gmon.out > profile.txt  
 - Ouvrir le fichier profile.txt  
+
+Memory test:  
+valgrind --leak-check=full ./[nom_executable]  
