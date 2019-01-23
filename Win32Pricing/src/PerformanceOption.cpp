@@ -27,7 +27,7 @@ PerformanceOption::PerformanceOption(double T, int nbTimeSteps, int size, PnlVec
  * @return phi(trajectoire)
  */
 double PerformanceOption::payoff(const PnlMat *path) {
-	
+
 	double payOff = 1;
 	PnlVect* vecteur = pnl_mat_mult_vect(path, weights_);
 	double a0 = pnl_vect_get(vecteur, 0);
@@ -38,7 +38,6 @@ double PerformanceOption::payoff(const PnlMat *path) {
 		payOff += fmax(( aNext/ a0 )-1.0, 0.0);
 		a0 = aNext;
 	}
-	return payOff;
 	pnl_vect_free(&vecteur);
+	return payOff;
 }
-

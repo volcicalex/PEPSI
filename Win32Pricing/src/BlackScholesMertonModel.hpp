@@ -18,7 +18,7 @@ public:
 	PnlVect *Gi;
 
 	/* Matrice des dividendes */
-	PlnMat *Div;
+	PnlMat *Div;
 	/* Vecteur de dividendes */
 	PnlVect *Div_d;
 
@@ -36,7 +36,7 @@ public:
 	* @param[in]  spot : valeurs initiales des sous-jacents
 	* @param[in]  trend : tendance du modèle
 	*/
-	BlackScholesMertonModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend);
+	BlackScholesMertonModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend);
 
 	/**
 	 * Génère une trajectoire du modèle et la stocke dans path
@@ -82,4 +82,3 @@ public:
 	/* Destructeur pour le model de BlackScholes */
 	~BlackScholesMertonModel();
 };
-

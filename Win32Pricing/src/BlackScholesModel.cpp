@@ -24,9 +24,9 @@ BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *s
 	L = pnl_mat_create(size_, size_);
 	pnl_mat_clone(L, rho_);
 	pnl_mat_chol(L);
-	G = pnl_mat_new();
-	Gi = pnl_vect_new();
-	Ld = pnl_vect_new();
+	G = pnl_mat_create_from_zero(2,2);
+	Gi = pnl_vect_create_from_zero(2);
+	Ld = pnl_vect_create_from_zero(2);
 }
 
 /**
@@ -98,14 +98,14 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 
 		pnl_mat_get_row(Ld, L, d);
 		sigma = pnl_vect_get(sigma_, d);
-		
+
 		/* Si t n'est pas un pas de discrétisation alors on simule le prochain pas */
 		if (shiftStep != 0.0) {
 			pnl_mat_get_row(Gi, G, 0);
 			st = MGET(past, nextIndex, d) * exp((r_ - sigma * sigma / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
 			pnl_mat_set(path, nextIndex, d, st);
 		}
-		
+
 		expo_t = exp((r_ - sigma * sigma / 2) * step);
 		Wt = sigma * sqrt_step;
 

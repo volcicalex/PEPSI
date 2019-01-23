@@ -3,6 +3,7 @@
 .vs/*
 TestsPricing/x64/*
 Win32Pricing/x64/*
+Linux/build/*
 x64/*
 
 # Compiled Object files
@@ -39,3 +40,4 @@ TestsPricing/pch.cpp
 TestsPricing/TestsPricing.vcxproj
 TestsPricing/x64/Debug/vc141.idb
 TestsPricing/x64/Debug/vc141.pdb
+

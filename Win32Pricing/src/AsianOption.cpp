@@ -6,9 +6,9 @@
 
 /**
 * Constructeur de la classe
-* @param[in]  T : maturité
-* @param[in]  nbTimeSteps : nombre de pas de temps de discrétisation
-* @param[in]  size : dimension du modèle
+* @param[in]  T : maturitï¿½
+* @param[in]  nbTimeSteps : nombre de pas de temps de discrï¿½tisation
+* @param[in]  size : dimension du modï¿½le
 * @param[in] weights : poids des actifs
 * @param[in]  strike : prix d'exercice de l'option
 */
@@ -24,11 +24,13 @@ AsianOption::AsianOption(double T, int nbTimeSteps, int size, PnlVect* weights, 
  * Calcule la valeur du payoff sur la trajectoire
  *
  * @param[in] path est une matrice de taille (N+1) x d
- * contenant une trajectoire du modèle telle que créée
+ * contenant une trajectoire du modï¿½le telle que crï¿½ï¿½e
  * par la fonction asset.
  * @return phi(trajectoire)
  */
 double AsianOption::payoff(const PnlMat *path) {
-	double sum = pnl_vect_sum(pnl_mat_mult_vect(path, weights_))/(nbTimeSteps_ + 1);
+	PnlVect *vecteur = pnl_mat_mult_vect(path, weights_);
+	double sum = pnl_vect_sum(vecteur)/(nbTimeSteps_ + 1);
+	pnl_vect_free(&vecteur);
 	return fmax(sum - strike_, 0);
 }
