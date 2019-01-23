@@ -186,10 +186,10 @@ void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  
 /* Destructeur pour le modele de BlackScholes */
 BlackScholesModel::~BlackScholesModel()
 {
-	pnl_vect_free(&sigma_);
+/*	pnl_vect_free(&sigma_);
 	pnl_vect_free(&spot_);
 	pnl_vect_free(&trend_);
-	pnl_mat_free(&rho_);
+	pnl_mat_free(&rho_);*/
 	pnl_mat_free(&L);
 	pnl_mat_free(&G);
 	pnl_vect_free(&Ld);

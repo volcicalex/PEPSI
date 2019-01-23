@@ -195,7 +195,7 @@ void BlackScholesMertonModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 }
 
 /* Destructeur pour le modele de BlackScholes */
-BlackScholesMertonModel::~BlackScholesMertonModel()
+/*BlackScholesMertonModel::~BlackScholesMertonModel()
 {
 	pnl_vect_free(&sigma_);
 	pnl_vect_free(&spot_);
@@ -208,4 +208,4 @@ BlackScholesMertonModel::~BlackScholesMertonModel()
 	pnl_mat_free(&DatesDiv);
 	pnl_vect_free(&Div_d);
 	pnl_vect_free(&DatesDiv_d);
-}
+}*/

@@ -146,7 +146,6 @@ int main(int argc, char **argv)
 
         cout<<"prix: " << price <<endl;
         cout<<"intervalle_confinace: " << ic <<endl;
-
         cout << "delta: \n";
         pnl_vect_print_asrow(delta);
         cout << " IC_vecteur : \n";

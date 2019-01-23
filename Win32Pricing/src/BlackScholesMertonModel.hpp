@@ -80,5 +80,5 @@ public:
 	void shiftAsset(PnlMat *shift_path, const PnlMat *path, int d, double h, double t, double timestep) override;
 
 	/* Destructeur pour le model de BlackScholes */
-	~BlackScholesMertonModel();
+	/*~BlackScholesMertonModel();*/
 };
