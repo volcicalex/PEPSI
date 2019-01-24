@@ -10,7 +10,7 @@
  */
 TEST(spot_t, SimulPerf) {
 
-	printf("=== Methode 1 === \n");
+	//printf("=== Methode 1 === \n");
 
 	const char *infile = "../data/simul_perf.dat";
 	const PnlMat *perfPath = pnl_mat_create_from_file(infile);
@@ -58,8 +58,8 @@ TEST(spot_t, SimulPerf) {
 	// Calcul du prix connaissant le passe jusqu'en t
 	mCarlo->price(perfPath, t, prix, ic);
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	/*printf("prix t echeance T : %f\n", prix);
+	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -78,8 +78,8 @@ TEST(spot_t, SimulPerf) {
 	// Calcul du prix en 0 echeance T-t
 	mCarlo2->price(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	/*printf("prix 0 echeance T-t : %f\n", prix2);
+	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
@@ -93,7 +93,7 @@ TEST(spot_t, SimulPerf) {
  */
 TEST(spot_t, SimulPerf2) {
 
-	printf("=== Methode 2 === \n");
+	//printf("=== Methode 2 === \n");
 
 	const char *infile = "../data/simul_perf.dat";
 	const PnlMat *perfpath = pnl_mat_create_from_file(infile);
@@ -139,8 +139,8 @@ TEST(spot_t, SimulPerf2) {
 	// Calcul du prix connaissant le passe jusqu'en t
 	mCarlo->price(past, t, prix, ic);
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	/*printf("prix t echeance T : %f\n", prix);
+	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -159,8 +159,8 @@ TEST(spot_t, SimulPerf2) {
 	// Calcul du prix en 0 echeance T-t
 	mCarlo2->price(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	/*printf("prix 0 echeance T-t : %f\n", prix2);
+	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 

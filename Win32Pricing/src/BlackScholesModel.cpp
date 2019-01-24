@@ -48,6 +48,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 
 	pnl_mat_rng_normal(G, nbTimeSteps, size_, rng);
 
+
 	for (int d = 0; d < size_; d++) {
 
 		pnl_mat_get_row(Ld, L, d);

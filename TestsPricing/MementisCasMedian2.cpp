@@ -8,7 +8,7 @@
 /* Tests les dividendes reçus par l'investisseur dans le "cas defavorable" (cf brochure) */
 TEST(propMementis, CasMedian2) {
 
-	printf("=== Cas Median 2 === \n");
+	//printf("=== Cas Median 2 === \n");
 
 	const char *infile = "../data/mementis_casMedian2.txt";
 	const PnlMat *path = pnl_mat_create_from_file(infile);
@@ -17,7 +17,7 @@ TEST(propMementis, CasMedian2) {
 
 	FCPMementis *mementis = new FCPMementis(nbTimeSteps);
 
-	printf("--- Performance du panier d'actions --- \n");
+	//printf("--- Performance du panier d'actions --- \n");
 
 	mementis->fill_performances(path);
 
@@ -27,7 +27,7 @@ TEST(propMementis, CasMedian2) {
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->performances_, perf_theorique, 0.001));
 
-	printf("--- Point d'entree --- \n");
+	//printf("--- Point d'entree --- \n");
 
 	mementis->PE();
 
@@ -39,7 +39,7 @@ TEST(propMementis, CasMedian2) {
 
 	mementis->fill_performances_plaf(path);
 
-	printf("--- Dividendes --- \n");
+	//printf("--- Dividendes --- \n");
 
 	mementis->fill_dividendes(path);
 
@@ -49,7 +49,7 @@ TEST(propMementis, CasMedian2) {
 
 	ASSERT_TRUE(pnl_vect_isequal(mementis->dividendes_, div_theorique, 0.001));
 
-	printf("--- Payoff echeance --- \n");
+	//printf("--- Payoff echeance --- \n");
 	double remb_echeance = mementis->remboursement_echeance(path);
 
 	// Resultat calcule dans un fichier excel annexe
@@ -58,16 +58,15 @@ TEST(propMementis, CasMedian2) {
 	ASSERT_LE(remb_echeance, remb_echeance_theorique + 0.001);
 	ASSERT_GE(remb_echeance, remb_echeance_theorique - 0.001);
 
-	printf("--- Gains actualises --- \n");
+	//printf("--- Gains actualises --- \n");
 
 	double payoff = mementis->payoff(path);
+	payoff *= exp(-mementis->taux_capitalisation_* mementis->T_);
 
 	// Resultat calcule dans un fichier excel annexe
-	// double payoff_theorique = 100;
+	double payoff_theorique = 28.61176786;
 
-	//ASSERT_LE(remb_echeance, payoff_theorique + 0.001);
-	//ASSERT_GE(remb_echeance, payoff_theorique - 0.001);
-
-	//printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
+	ASSERT_LE(payoff, payoff_theorique + 0.001);
+	ASSERT_GE(payoff, payoff_theorique - 0.001);
 
 }

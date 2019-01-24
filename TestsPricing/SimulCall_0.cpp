@@ -37,7 +37,6 @@ TEST(spot_0, SimulCall) {
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
 	double prix2 = pnl_bs_call(100, strike, T, r, 0, 0.2);
-
 	GTEST_ASSERT_LE(abs(prix - prix2), ic);
 
 	delete mCarlo;

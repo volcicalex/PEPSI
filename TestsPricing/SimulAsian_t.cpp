@@ -4,9 +4,11 @@
 #include "../Win32Pricing/src/MonteCarlo.hpp"
 #include "../Win32Pricing/src/AsianOption.hpp"
 
+
 /* Methode 1 de test du prix en t
  * On calcule le prix calcule en connaissant le passe jusqu'en t avec une echeance de T (deuxieme methode de asset)
  */
+/* pas de sens pour asiatique : path dependant 
 TEST(spot_t, SimulAsian) {
 
 	printf("=== Methode 1 === \n");
@@ -61,7 +63,7 @@ TEST(spot_t, SimulAsian) {
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
 
 	delete mCarlo;
-}
+}*/
 
 /* Methode 2 de test du prix en t
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
@@ -69,7 +71,7 @@ TEST(spot_t, SimulAsian) {
  */
 TEST(spot_t, SimulAsian2) {
 
-	printf("=== Methode 2 === \n");
+	//printf("=== Methode 2 === \n");
 
 	const char *infile = "../data/simul_asian.dat";
 	const PnlMat *asianPath = pnl_mat_create_from_file(infile);
@@ -116,8 +118,8 @@ TEST(spot_t, SimulAsian2) {
 	// Calcul du prix connaissant le passe jusqu'en t
 	mCarlo->price(past, t, prix, ic);
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	/*printf("prix t echeance T : %f\n", prix);
+	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -136,8 +138,8 @@ TEST(spot_t, SimulAsian2) {
 	// Calcul du prix en 0 echeance T-t
 	mCarlo2->price(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	/*printf("prix 0 echeance T-t : %f\n", prix2);
+	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 

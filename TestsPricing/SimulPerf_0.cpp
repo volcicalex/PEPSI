@@ -36,6 +36,7 @@ TEST(spot_0, SimulPerformance) {
 
 	double prix = 0.0;
 	double ic = 0.0;
+
 	mCarlo->price(prix, ic);
 
 	ASSERT_LE(1.257353 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";

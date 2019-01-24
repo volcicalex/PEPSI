@@ -38,6 +38,7 @@ TEST(spot_0, SimulBasket) {
 	double prix = 0.0;
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
+
 	ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
 	ASSERT_GE(13.627 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
 	ASSERT_TRUE(abs((ic / 1.96) - 0.025) / 0.025 <= 0.05); // erreur relative inf a 5%
