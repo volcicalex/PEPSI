@@ -126,8 +126,9 @@ double FCPMementis::payoff(const PnlMat *path) {
 	
 	PnlVect *flux_capitalises = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
 
+	pnl_vect_set(flux_capitalises, 0, -VLO_ * exp(taux_capitalisation_*T_));
 
-	for (int annee = 0; annee < nbTimeSteps_; annee++)
+	for (int annee = 1; annee < nbTimeSteps_; annee++)
 	{
 		pnl_vect_set(flux_capitalises, annee, GET(dividendes_, annee)*exp(taux_capitalisation_*(T_-annee)));
 		/*printf("iteration %i \n", annee);

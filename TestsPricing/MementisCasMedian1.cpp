@@ -68,6 +68,6 @@ TEST(propMementis, CasMedian1) {
 	//ASSERT_LE(remb_echeance, payoff_theorique + 0.001);
 	//ASSERT_GE(remb_echeance, payoff_theorique - 0.001);
 
-	printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
+	//printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
 
 }

@@ -33,6 +33,7 @@ TEST(propMementis, CasDefavorable) {
 
 	mementis->PE();
 
+
 	// Resultat calcule dans un fichier excel annexe
 	double pe_theorique = 1;
 
@@ -55,7 +56,6 @@ TEST(propMementis, CasDefavorable) {
 
 	// Resultat calcule dans un fichier excel annexe
 	double remb_echeance_theorique = 100;
-
 	ASSERT_LE(remb_echeance, remb_echeance_theorique + 0.001);
 	ASSERT_GE(remb_echeance, remb_echeance_theorique - 0.001);
 
@@ -69,6 +69,6 @@ TEST(propMementis, CasDefavorable) {
 	//ASSERT_LE(remb_echeance, payoff_theorique + 0.001);
 	//ASSERT_GE(remb_echeance, payoff_theorique - 0.001);
 
-	printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
+	//printf("payoff actualise : %f \n", payoff*exp(-mementis->taux_capitalisation_* mementis->T_));
 
 }
