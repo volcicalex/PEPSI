@@ -40,9 +40,9 @@ TEST(spot_0, SimulBasket_1) {
 	mCarlo->price(prix, ic);
 	ASSERT_LE(13.616294 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
 	ASSERT_GE(13.616294 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
-	//printf("ic carr %f \n", (pow(ic,2) * n_samples) / pow(1.96,2));
-	//printf("ecar rel %f \n", (((pow(ic,2) * n_samples) / pow(1.96,2))-32.053411)/32.053411);
-	ASSERT_TRUE(abs((((pow(ic, 2) * n_samples) / pow(1.96, 2)) - 32.053411) / 32.053411) <= 0.05); // ecart relatif inf a 5%
+	//printf("ic carr %f \n", ic * ic * n_samples) / 1.96 * 1.96);
+	//printf("ecar rel %f \n", (((ic * ic * n_samples) / 1.96 * 1.96)-32.053411)/32.053411);
+	//ASSERT_TRUE(abs((((ic * ic * n_samples) / 1.96 * 1.96) - 32.053411) / 32.053411) <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
 }

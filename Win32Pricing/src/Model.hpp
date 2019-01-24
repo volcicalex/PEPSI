@@ -69,4 +69,6 @@ public:
 	* @param[in] rng : générateur de nombres aléatoires
 	*/
 	virtual void simul_market(PnlMat *simulatedMarket, double T, int H, PnlRng *rng) = 0;
+
+	virtual ~Model()=default;;
 };

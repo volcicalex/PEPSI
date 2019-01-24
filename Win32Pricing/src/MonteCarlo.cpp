@@ -88,7 +88,7 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
  * @param[in] conf_delta contient le vecteur d'intervalle de confiance sur le calcul du delta
  */
 void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *conf_delta) {
-
+	/*
 	int lastIndex = floor(t * opt_->nbTimeSteps_ / opt_->T_);
 
 	double sum;
@@ -130,9 +130,69 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *co
 		pnl_vect_set(delta, d, coefficient * sum / nbSamples_);
 		standard_dev = coefficient * sqrt(sum2 / nbSamples_ - (sum / nbSamples_)*(sum / nbSamples_));
 		pnl_vect_set(conf_delta, d, standard_dev / sqrt(nbSamples_));
+		
 
 	}
 
+	pnl_mat_free(&path);
+	pnl_mat_free(&increment_path);
+	pnl_mat_free(&decrement_path);
+	*/
+	
+	double timestep = opt_->T_ / opt_->nbTimeSteps_;
+	double prix;
+	double payoff_increment;
+	double payoff_decrement;
+	double standard_dev;
+	double actualisation = exp((-mod_->r_ * (opt_->T_ - t)));
+	double coefficient;
+
+	double epsilon = 0.00000001;
+	double decimal_step = t / timestep;
+	double ceil_step = ceil(decimal_step);
+	int lastIndex = ((ceil_step - epsilon < decimal_step) && (decimal_step < ceil_step + epsilon)) ? ceil_step : floor(decimal_step);
+
+	PnlVect *diff = pnl_vect_create_from_zero(past->n);
+	PnlVect *diff_square = pnl_vect_create_from_zero(past->n);
+
+	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+	PnlMat *increment_path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+	PnlMat *decrement_path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+
+	pnl_mat_set_subblock(path, past, 0, 0);
+
+	for (int j = 0; j < nbSamples_; j++)
+	{
+
+		mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
+
+		for (int d = 0; d < past->n; d++)
+		{
+			mod_->shiftAsset(increment_path, path, d, fdStep_, t, timestep);
+			mod_->shiftAsset(decrement_path, path, d, -fdStep_, t, timestep);
+
+			payoff_increment = opt_->payoff(increment_path);
+			payoff_decrement = opt_->payoff(decrement_path);
+
+			pnl_vect_set(diff, d, GET(diff, d) + payoff_increment - payoff_decrement);
+			pnl_vect_set(diff_square, d, GET(diff_square, d) + (payoff_increment - payoff_decrement) * (payoff_increment - payoff_decrement));
+		}
+
+	}
+
+	for (int d = 0; d < past->n; d++)
+	{
+		prix = MGET(past, lastIndex, d);
+		coefficient = actualisation / (2 * fdStep_ * prix);
+		pnl_vect_set(delta, d, coefficient * GET(diff, d) / nbSamples_);
+
+		standard_dev = coefficient * sqrt(GET(diff_square, d) / nbSamples_ - (GET(diff, d) / nbSamples_) * (GET(diff, d) / nbSamples_));
+		pnl_vect_set(conf_delta, d, standard_dev / sqrt(nbSamples_));
+
+	}
+
+	pnl_vect_free(&diff);
+	pnl_vect_free(&diff_square);
 	pnl_mat_free(&path);
 	pnl_mat_free(&increment_path);
 	pnl_mat_free(&decrement_path);
@@ -146,7 +206,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *co
 */
 void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 
-	int H = marketPrice->m;
+	int H = marketPrice->m - 1;
 	int discretisation = H / opt_->nbTimeSteps_;
 	int nextIndex = 0;
 
@@ -171,7 +231,7 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 
 	hedge = prix - pnl_vect_scalar_prod(delta, price_vect);
 
-	for (int i = 1; i < H; i++) {
+	for (int i = 1; i < H + 1; i++) {
 
 		pnl_vect_clone(last_delta, delta);
 		pnl_mat_get_row(price_vect, marketPrice, i);
@@ -182,13 +242,13 @@ void MonteCarlo::pnl(double& pnl, PnlMat *marketPrice) {
 		}
 		else pnl_mat_set_row(market_subblock, price_vect, nextIndex);
 		
-		this->delta(market_subblock, i*delta_h, delta, conf_delta);
+		this->delta(market_subblock, i * delta_h, delta, conf_delta);		
 		pnl_vect_minus_vect(last_delta, delta);
 		hedge = hedge * actualisation + pnl_vect_scalar_prod(last_delta, price_vect);
 
 	}
 
-	pnl = hedge + pnl_vect_scalar_prod(delta, price_vect) - opt_->payoff(marketPrice);
+	pnl = hedge + pnl_vect_scalar_prod(delta, price_vect) - opt_->payoff(market_subblock);
 
 	pnl_vect_free(&price_vect);
 	pnl_vect_free(&last_delta);

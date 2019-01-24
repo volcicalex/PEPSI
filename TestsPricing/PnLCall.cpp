@@ -15,7 +15,7 @@ TEST(PnL, pnlCall) {
 	double fdStep = 0.1;
 
 	int size = 1;
-	int nbTimeSteps = 1;
+	int nbTimeSteps = 25;
 	int n_samples = 100000;
 	int H = 150;
 

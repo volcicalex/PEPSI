@@ -81,4 +81,3 @@ public:
 	/* Destructeur pour le model de BlackScholes */
 	~BlackScholesModel();
 };
-

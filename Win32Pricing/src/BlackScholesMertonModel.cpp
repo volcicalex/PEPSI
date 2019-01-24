@@ -12,7 +12,7 @@
 * @param[in]  spot : valeurs initiales des sous-jacents
 * @param[in]  trend : tendance du modèle
 */
-BlackScholesMertonModel::BlackScholesMertonModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
+BlackScholesMertonModel::BlackScholesMertonModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
 
 	size_ = size;
 	r_ = r;
@@ -21,9 +21,10 @@ BlackScholesMertonModel::BlackScholesMertonModel(int size, double r, double rho,
 	spot_ = spot;
 	trend_ = trend;
 
-	this->L = pnl_mat_create_from_scalar(size_, size_, rho_);
-	pnl_mat_set_diag(L, 1, 0);
+	L = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L, rho_);
 	pnl_mat_chol(L);
+
 	G = pnl_mat_new();
 	Gi = pnl_vect_new();
 	Ld = pnl_vect_new();
@@ -51,7 +52,8 @@ void BlackScholesMertonModel::asset(PnlMat *path, double T, int nbTimeSteps, Pnl
 	double expo_t;
 	double Wt;
 	double st;
-
+int indiceDivCourant;
+double dateDivCourant;
 	pnl_mat_rng_normal(G, nbTimeSteps, size_, rng);
 
 	for (int d = 0; d < size_; d++) {
@@ -71,10 +73,10 @@ void BlackScholesMertonModel::asset(PnlMat *path, double T, int nbTimeSteps, Pnl
 			pnl_mat_get_row(Gi, G, i - 1);
 			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi, Ld));
 
-			// ti < Tj <= ti+1			
+			// ti < Tj <= ti+1
 			if ((i-1)*step < dateDivCourant <= i*step ){
 				st = st * (1- pnl_vect_get(Div_d, indiceDivCourant));
-				indiceDivCourant++; 
+				indiceDivCourant++;
 				dateDivCourant= pnl_vect_get(DatesDiv_d, indiceDivCourant);
 			}
 			pnl_mat_set(path, i, d, st);
@@ -113,7 +115,7 @@ void BlackScholesMertonModel::asset(PnlMat *path, double t, double T, int nbTime
 	int indiceDivCourant = 0;
 	double dateDivCourant = pnl_vect_get(DatesDiv_d, indiceDivCourant);
 	bool finDividende = false;
-	
+
 
 	for (int d = 0; d < size_; d++) {
 
@@ -126,14 +128,14 @@ void BlackScholesMertonModel::asset(PnlMat *path, double t, double T, int nbTime
 		/////////////////////////////////////////////
 		pnl_mat_get_row(Div_d, Div, d);
 		pnl_mat_get_row(DatesDiv_d, DatesDiv, d);
-		while (t > dateDivCourant  && (dateDivCourant != -1) && indiceDivCourant < Div_d->m  ){ 
+		while (t > dateDivCourant  && (dateDivCourant != -1) && indiceDivCourant < Div_d->size){
 			indiceDivCourant++;
 			dateDivCourant = pnl_vect_get(DatesDiv_d, indiceDivCourant);
-			
+
 		}
 
 		/*t < dateDivCourant  && indiceDivCourant >= Div_d->m */
-		if (indiceDivCourant >= Div_d->m || dateDivCourant = -1 ){
+		if ((indiceDivCourant >= Div_d->size)||(dateDivCourant = -1)){
 			bool finDividende = true;
 		}
 
@@ -142,10 +144,10 @@ void BlackScholesMertonModel::asset(PnlMat *path, double t, double T, int nbTime
 		if (shiftStep != 0.0) {
 			pnl_mat_get_row(Gi, G, 0);
 			st = MGET(past, nextIndex, d) * exp((r_ - pow(sigma, 2) / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
-			// if not outranged and 
+			// if not outranged and
 			if ( t < dateDivCourant <= nextIndex * step && !finDividende ) {
 				st = st * (1- pnl_vect_get(Div_d, indiceDivCourant));
-				indiceDivCourant++; 
+				indiceDivCourant++;
 				dateDivCourant = pnl_vect_get(DatesDiv_d, indiceDivCourant);
 			}
 			pnl_mat_set(path, nextIndex, d, st);
@@ -161,7 +163,7 @@ void BlackScholesMertonModel::asset(PnlMat *path, double t, double T, int nbTime
 
 			if ((i-1)*step < dateDivCourant <= i*step ){
 				st = st * (1- pnl_vect_get(Div_d, indiceDivCourant));
-				indiceDivCourant++; 
+				indiceDivCourant++;
 			}
 			pnl_mat_set(path, i, d, st);
 		}
@@ -193,7 +195,7 @@ void BlackScholesMertonModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 }
 
 /* Destructeur pour le modele de BlackScholes */
-BlackScholesMertonModel::~BlackScholesMertonModel()
+/*BlackScholesMertonModel::~BlackScholesMertonModel()
 {
 	pnl_vect_free(&sigma_);
 	pnl_vect_free(&spot_);
@@ -206,4 +208,4 @@ BlackScholesMertonModel::~BlackScholesMertonModel()
 	pnl_mat_free(&DatesDiv);
 	pnl_vect_free(&Div_d);
 	pnl_vect_free(&DatesDiv_d);
-}
+}*/

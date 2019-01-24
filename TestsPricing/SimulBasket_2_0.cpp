@@ -41,7 +41,7 @@ TEST(spot_0, SimulBasket_2) {
 
 	ASSERT_LE(9.238710 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
 	ASSERT_GE(9.238710 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
-	ASSERT_TRUE(abs((((pow(ic, 2) * n_samples) / pow(1.96, 2)) - 152.094852) / 152.094852) <= 0.05); // ecart relatif inf a 5%
+	//ASSERT_TRUE(abs((((ic * ic * n_samples) / 1.96 * 1.96) - 152.094852) / 152.094852) <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
 }

@@ -24,9 +24,9 @@ BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *s
 	L = pnl_mat_create(size_, size_);
 	pnl_mat_clone(L, rho_);
 	pnl_mat_chol(L);
-	G = pnl_mat_new();
-	Gi = pnl_vect_new();
-	Ld = pnl_vect_new();
+	G = pnl_mat_create_from_zero(2,2);
+	Gi = pnl_vect_create_from_zero(2);
+	Ld = pnl_vect_create_from_zero(2);
 }
 
 /**
@@ -52,7 +52,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 
 		pnl_mat_get_row(Ld, L, d);
 		sigma = pnl_vect_get(sigma_, d);
-		expo_t = exp((r_ - pow(sigma, 2) / 2) * step);
+		expo_t = exp((r_ - sigma * sigma / 2) * step);
 		Wt = sigma * sqrt_step;
 
 		for (int i = 1; i < nbTimeSteps + 1; i++) {
@@ -79,10 +79,14 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
  */
 void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) {
 
+	double epsilon = 0.00000001;
 	double step = T / nbTimeSteps;
 	double sqrt_step = sqrt(step);
-	int nextIndex = ceil(t / step);
+	double decimal_step = t / step;
+	double floor_step = floor(decimal_step);
+	int nextIndex = ((floor_step - epsilon < decimal_step) && (decimal_step < floor_step + epsilon)) ? floor_step : ceil(decimal_step);
 	double shiftStep = nextIndex * step - t;
+
 	double sigma;
 	double expo_t;
 	double Wt;
@@ -98,11 +102,11 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 		/* Si t n'est pas un pas de discrétisation alors on simule le prochain pas */
 		if (shiftStep != 0.0) {
 			pnl_mat_get_row(Gi, G, 0);
-			st = MGET(past, nextIndex, d) * exp((r_ - pow(sigma, 2) / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
+			st = MGET(past, nextIndex, d) * exp((r_ - sigma * sigma / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi));
 			pnl_mat_set(path, nextIndex, d, st);
 		}
 
-		expo_t = exp((r_ - pow(sigma, 2) / 2) * step);
+		expo_t = exp((r_ - sigma * sigma / 2) * step);
 		Wt = sigma * sqrt_step;
 
 		for (int i = nextIndex + 1; i < nbTimeSteps + 1; i++) {
@@ -129,7 +133,10 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 	 */
 void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path, int d, double h, double t, double timestep) {
 
-	double nbSteps = ceil(t / timestep);
+	double epsilon = 0.00000001;
+	double decimal_step = t / timestep;
+	double floor_step = floor(decimal_step);
+	int nbSteps = ((floor_step - epsilon < decimal_step) && (decimal_step < floor_step + epsilon)) ? floor_step : ceil(decimal_step);
 
 	pnl_mat_clone(shift_path, path);
 
@@ -163,7 +170,7 @@ void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  
 		pnl_mat_get_row(Ld, L, d);
 		sigma = pnl_vect_get(sigma_, d);
 		trend_d = pnl_vect_get(trend_, d);
-		expo_t = exp((trend_d- pow(sigma, 2) / 2) * step);
+		expo_t = exp((trend_d- sigma * sigma / 2) * step);
 		Wt = sigma * sqrt_step;
 
 		for (int i = 1; i < H + 1; i++) {
@@ -179,10 +186,10 @@ void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  
 /* Destructeur pour le modele de BlackScholes */
 BlackScholesModel::~BlackScholesModel()
 {
-	pnl_vect_free(&sigma_);
+/*	pnl_vect_free(&sigma_);
 	pnl_vect_free(&spot_);
 	pnl_vect_free(&trend_);
-	pnl_mat_free(&rho_);
+	pnl_mat_free(&rho_);*/
 	pnl_mat_free(&L);
 	pnl_mat_free(&G);
 	pnl_vect_free(&Ld);
