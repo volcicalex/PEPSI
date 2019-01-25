@@ -81,7 +81,7 @@ void FCPMementis::fill_dividendes(const PnlMat *path) {
 
 	// Dividendes année 5 à 12
 	for (int i = 5; i < nbTimeSteps_ + 1; i++) {
-		dividende_prec = VLO_ * fmax(0.6 * dividende_prec/VLO_, GET(performances_plaf_, i));
+		dividende_prec = fmax(0.6 * dividende_prec, VLO_ * GET(performances_plaf_, i));
 		pnl_vect_set(dividendes_, i, dividende_prec);
 	}
 }
@@ -99,19 +99,9 @@ double FCPMementis::calcul_plus_value(const PnlMat *path) {
 	/* Remplit les différentes vecteurs nécessaires */
 	fill_performances(path);
 	PE();
-	fill_performances_plaf(path);
 	fill_dividendes(path);
 
-	// Vecteur du niveau de dividendes en pourcentage
-	PnlVect *niveau_div = pnl_vect_copy(dividendes_);
-	pnl_vect_div_scalar(niveau_div, VLO_);
-
-	double somme_dividende = pnl_vect_sum(niveau_div);
-	double somme_perf = pnl_vect_sum(performances_plaf_);
-
-	pnl_vect_free(&niveau_div);
-
-	return fmax(somme_perf - somme_dividende, 0);
+	return fmax(pnl_vect_sum(performances_plaf_) - pnl_vect_sum(dividendes_) /VLO_, 0);
 }
 
 
@@ -125,14 +115,12 @@ double FCPMementis::calcul_plus_value(const PnlMat *path) {
 */
 double FCPMementis::payoff(const PnlMat *path) {
 
-	double plus_value = calcul_plus_value(path);
-	
-	plus_value = -VLO_ * exp(taux_capitalisation_ * T_) + VLO_ * (1+plus_value) + GET(dividendes_, nbTimeSteps_);
+	double res = -VLO_ * exp(taux_capitalisation_ * T_) + remboursement_echeance(path) + GET(dividendes_, nbTimeSteps_);
 
 	for (int annee = 1; annee < nbTimeSteps_; annee++)
-		plus_value += GET(dividendes_, annee)*exp(taux_capitalisation_*(T_ - annee));
+		res += GET(dividendes_, annee)*exp(taux_capitalisation_*(T_ - annee));
 	
-	return plus_value;
+	return res;
 }
 
 
