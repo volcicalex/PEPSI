@@ -108,6 +108,9 @@ double FCPMementis::calcul_plus_value(const PnlMat *path) {
 
 	double somme_dividende = pnl_vect_sum(niveau_div);
 	double somme_perf = pnl_vect_sum(performances_plaf_);
+
+	pnl_vect_free(&niveau_div);
+
 	return fmax(somme_perf - somme_dividende, 0);
 }
 
@@ -124,24 +127,12 @@ double FCPMementis::payoff(const PnlMat *path) {
 
 	double plus_value = calcul_plus_value(path);
 	
-	PnlVect *flux_capitalises = pnl_vect_create_from_scalar(nbTimeSteps_ + 1, 0);
-
-	pnl_vect_set(flux_capitalises, 0, -VLO_ * exp(taux_capitalisation_*T_));
+	plus_value = -VLO_ * exp(taux_capitalisation_ * T_) + VLO_ * (1+plus_value) + GET(dividendes_, nbTimeSteps_);
 
 	for (int annee = 1; annee < nbTimeSteps_; annee++)
-	{
-		pnl_vect_set(flux_capitalises, annee, GET(dividendes_, annee)*exp(taux_capitalisation_*(T_-annee)));
-		/*printf("iteration %i \n", annee);
-		printf("dividende : %f \n", GET(dividendes_, annee));
-		printf("temps : %f \n", T_-annee);
-
-		printf("taux : %f \n", taux_capitalisation_);
-		pnl_vect_print(flux_capitalises);*/
-	}
-	pnl_vect_set(flux_capitalises, nbTimeSteps_, (GET(dividendes_, nbTimeSteps_)+ VLO_ * (1 + plus_value)));
-	/*printf("iteration %i \n", nbTimeSteps_);
-	pnl_vect_print(flux_capitalises);*/
-	return pnl_vect_sum(flux_capitalises);
+		plus_value += GET(dividendes_, annee)*exp(taux_capitalisation_*(T_ - annee));
+	
+	return plus_value;
 }
 
 

@@ -38,7 +38,7 @@ TEST(spot_0, SimulPerformance) {
 	double ic = 0.0;
 
 	mCarlo->price(prix, ic);
-
+	printf("prix %f \n", prix);
 	ASSERT_LE(1.257353 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
 	ASSERT_GE(1.257353 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
 	ASSERT_TRUE(abs(ic / 1.96 - 0.000587) / 0.000587 <= 0.05); // erreur relative inf a 5%
