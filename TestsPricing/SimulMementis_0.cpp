@@ -131,3 +131,42 @@ TEST(spot_0, SimulMementis3) {
 
 	delete mCarlo;
 }
+
+TEST(spot_0, SimulMementis4) {
+
+	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
+	double rho = 0;
+	int n_samples = 50000;
+	int nbTimeSteps = 12;
+
+	FCPMementis *mementis = new FCPMementis(nbTimeSteps);
+
+	PnlVect *sigma = pnl_vect_create_from_scalar(mementis->size_, 0.100000);
+
+	// Donnees recuperees de l'exemple Cas favorable dans la brochure
+	PnlVect *spot = pnl_vect_create_from_scalar(mementis->size_, 100);
+
+	PnlVect *trend = pnl_vect_create_from_zero(mementis->size_);
+
+	PnlMat *rho_vect = pnl_mat_create_from_scalar(mementis->size_, mementis->size_, rho);
+	pnl_mat_set_diag(rho_vect, 1, 0);
+
+	PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
+	pnl_rng_init(rng, PNL_RNG_MERSENNE);
+	pnl_rng_sseed(rng, time(NULL));
+
+	Model *bsmodel = new BlackScholesModel(mementis->size_, mementis->taux_capitalisation_, rho_vect, sigma, spot, trend);
+	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, mementis, rng, fdStep, n_samples);
+
+	double prix = 0.0;
+	double ic = 0.0;
+	mCarlo->price(prix, ic);
+
+	printf("Prix 0: %f \n", prix);
+	printf("demi - intervalle de confiance : %f\n", ic);
+
+
+	//ASSERT_TRUE(false);
+
+	delete mCarlo;
+}

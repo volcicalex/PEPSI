@@ -6,19 +6,18 @@
 #include "pnl/pnl_finance.h"
 
 
-TEST(spot_0, SimulMementis4) {
+TEST(spot_0, SimulMementis5) {
 
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 	double rho = 0;
-	int n_samples = 50000;
+	int n_samples = 100000;
 	int nbTimeSteps = 12;
 
 	FCPMementis *mementis = new FCPMementis(nbTimeSteps);
-
-	//PnlVect *sigma = pnl_vect_create_from_scalar(mementis->size_, 0.0600000);
 	
-	const char *sigmafile = "../data/vol_mementis.dat";
+	const char *sigmafile = "../data/vol_mementis_test.dat";
 	PnlVect *sigma = pnl_vect_create_from_file(sigmafile);
+	//PnlVect *sigma = pnl_vect_create_from_scalar(mementis->size_, 0.2);
 
 
 	const char *spotfile = "../data/spot_mementis.dat";
