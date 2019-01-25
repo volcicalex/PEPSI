@@ -84,7 +84,6 @@ TEST(spot_t, SimulMementis1) {
 	printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
-	printf("%f \n", abs(prix - prix2) / prix2);
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
@@ -170,7 +169,6 @@ TEST(spot_t, SimulMementis2) {
 	printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
-	printf("%f \n", abs(prix - prix2) / prix2);
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
@@ -257,7 +255,6 @@ TEST(spot_t, SimulMementis3) {
 	printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
-	printf("%f \n", abs(prix - prix2) / prix2);
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
@@ -343,7 +340,6 @@ TEST(spot_t, SimulMementis4) {
 	printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
-	printf("%f \n", abs(prix - prix2) / prix2);
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
