@@ -39,6 +39,13 @@ public:
 	void price(double &prix, double &ic);
 
 	/**
+	* Calcule le prix de l'option à la date 0 version parallelisee open mp
+	* @param[out] prix valeur de l'estimateur Monte Carlo
+	* @param[out] ic largeur de l'intervalle de confiance
+*/
+	void price_opm(double &prix, double &ic);
+
+	/**
 	 * Calcule le prix de l'option à la date t
 	 *
 	 * @param[in]  past contient la trajectoire du sous-jacent

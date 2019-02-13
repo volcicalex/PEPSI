@@ -69,4 +69,6 @@ TEST(propMementis, CasFavorable) {
 	ASSERT_LE(payoff, payoff_theorique + 0.001);
 	ASSERT_GE(payoff, payoff_theorique - 0.001);
 
+
+
 }

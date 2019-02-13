@@ -62,6 +62,7 @@ TEST(propMementis, CasDefavorable) {
 	//printf("--- Gains actualises --- \n");
 
 	double payoff = mementis->payoff(path);
+
 	payoff *= exp(-mementis->taux_capitalisation_* mementis->T_);
 
 	// Resultat calcule dans un fichier excel annexe
@@ -69,5 +70,7 @@ TEST(propMementis, CasDefavorable) {
 
 	ASSERT_LE(payoff, payoff_theorique + 0.001);
 	ASSERT_GE(payoff, payoff_theorique - 0.001);
+
+
 
 }

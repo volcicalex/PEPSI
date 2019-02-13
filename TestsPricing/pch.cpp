@@ -5,14 +5,14 @@
 
 #include "pch.h"
 
-/*int main() {
+int main() {
 	int testc = 2;
 	const char *testv[2] =
 	{
 		"gtest",
-		"--gtest_filter=spot_t.SimulAsian",
+		"--gtest_filter=spot_0.SimulBasket*",
 	};
 	
 	::testing::InitGoogleTest(&testc, (char**)testv);
 	return RUN_ALL_TESTS();
-}*/
+}

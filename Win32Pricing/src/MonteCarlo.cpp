@@ -1,4 +1,6 @@
 ﻿#include "MonteCarlo.hpp"
+#include <omp.h>
+#include <ctime>
 
 using namespace std;
 
@@ -44,6 +46,48 @@ void MonteCarlo::price(double &prix, double &ic) {
 
 	pnl_mat_free(&path);
 }
+
+/**
+	* Calcule le prix de l'option à la date 0 version parallelisee open mp
+	* @param[out] prix valeur de l'estimateur Monte Carlo
+	* @param[out] ic largeur de l'intervalle de confiance
+*/
+void MonteCarlo::price_opm(double &p_prix, double &p_ic)
+{
+	double payoff;
+	double prix = 0.0;
+	double ic = 0.0;
+
+	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+	pnl_mat_set_row(path, mod_->spot_, 0);
+
+#pragma omp parallel
+	{
+		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
+		pnl_rng_sseed(rng, 0);
+#pragma omp for reduction(+:prix) reduction(+:ic)
+		for (int i = 0; i < nbSamples_; i++)
+		{
+			mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng);
+			payoff = opt_->payoff(path);
+			prix += payoff;
+			ic += payoff * payoff;
+		}
+		pnl_rng_free(&rng);
+	}
+
+	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
+	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
+	ic = 1.96 * sqrt(ic / nbSamples_);
+
+	p_prix = prix;
+	p_ic = ic;
+
+
+	pnl_mat_free(&path);
+}
+
+
 
 /**
  * Calcule le prix de l'option à la date t
