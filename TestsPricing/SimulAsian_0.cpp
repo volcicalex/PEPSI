@@ -40,6 +40,8 @@ TEST(spot_0, SimulAsian) {
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
 
+	printf("prix %f, ic %f \n", prix, ic);
+
 	ASSERT_LE(4.67 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
 	ASSERT_GE(4.67 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
 	//ASSERT_TRUE(abs((ic / 1.96) - 0.029) / 0.029 <= 0.05); // ecart relatif inf a 5%
@@ -48,7 +50,7 @@ TEST(spot_0, SimulAsian) {
 }
 
 
-TEST(spot_0, SimulAsian_opm) {
+TEST(spot_0_opm, SimulAsian_opm) {
 
 	int size = 2;
 	double strike = 100;

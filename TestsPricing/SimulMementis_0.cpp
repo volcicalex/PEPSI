@@ -6,7 +6,7 @@
 #include "pnl/pnl_finance.h"
 
 
-TEST(spot_0, SimulMementis) {
+TEST(spot_0_mem, SimulMementis) {
 
 	printf("Vol a 0.06 \n");
 
@@ -48,7 +48,7 @@ TEST(spot_0, SimulMementis) {
 	delete mCarlo;
 }
 
-TEST(spot_0, SimulMementis2) {
+TEST(spot_0_mem, SimulMementis2) {
 
 	printf("Vol a 0.09 \n");
 
@@ -90,7 +90,7 @@ TEST(spot_0, SimulMementis2) {
 	delete mCarlo;
 }
 
-TEST(spot_0, SimulMementis3) {
+TEST(spot_0_mem, SimulMementis3) {
 
 	printf("Vol a 0.12 \n");
 
@@ -132,7 +132,7 @@ TEST(spot_0, SimulMementis3) {
 	delete mCarlo;
 }
 
-TEST(spot_0, SimulMementis4) {
+TEST(spot_0_mem, SimulMementis4) {
 
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 	double rho = 0;

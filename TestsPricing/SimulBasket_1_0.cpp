@@ -55,7 +55,7 @@ TEST(spot_0, SimulBasket_1) {
 * Programme de test pour le prix en 0 d'une option basket version parallelisee par open MP
 */
 
-TEST(spot_0, SimulBasket_1_opm) {
+TEST(spot_0_opm, SimulBasket_1_opm) {
 
 	int size = 40;
 	double strike = 100;

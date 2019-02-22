@@ -30,19 +30,19 @@ void MonteCarlo::price(double &prix, double &ic) {
 	double payoff;
 	prix = 0;
 	double esp_carre = 0;
-
 	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 	pnl_mat_set_row(path, mod_->spot_, 0);
 
 	for (int j = 0; j < nbSamples_; ++j) {
 		mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng_);
-		payoff = opt_->payoff(path);
+		payoff = opt_->payoff(path);		
 		prix += payoff;
 		esp_carre += payoff*payoff;
 	}
 	double estimateur_carre = exp(-2 * mod_->r_*opt_->T_)*(esp_carre / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
 	prix *= exp(-mod_->r_*opt_->T_) / nbSamples_;
 	ic = 1.96 * sqrt(estimateur_carre / nbSamples_);
+
 
 	pnl_mat_free(&path);
 }
@@ -53,18 +53,16 @@ void MonteCarlo::price(double &prix, double &ic) {
 	* @param[out] ic largeur de l'intervalle de confiance
 */
 void MonteCarlo::price_opm(double &p_prix, double &p_ic)
-{
-	double payoff;
+{	
 	double prix = 0.0;
 	double ic = 0.0;
-
-	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
-	pnl_mat_set_row(path, mod_->spot_, 0);
-
-#pragma omp parallel
+#pragma omp parallel 
 	{
+		double payoff;
 		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
 		pnl_rng_sseed(rng, 0);
+		PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+		pnl_mat_set_row(path, mod_->spot_, 0);
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
 		{
@@ -74,6 +72,7 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 			ic += payoff * payoff;
 		}
 		pnl_rng_free(&rng);
+		pnl_mat_free(&path);
 	}
 
 	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
@@ -82,9 +81,6 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 
 	p_prix = prix;
 	p_ic = ic;
-
-
-	pnl_mat_free(&path);
 }
 
 

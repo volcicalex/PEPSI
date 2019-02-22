@@ -48,7 +48,7 @@ TEST(spot_0, SimulBasket_2) {
 	delete mCarlo;
 }
 
-TEST(spot_0, SimulBasket_2_opm) {
+TEST(spot_0_opm, SimulBasket_2_opm) {
 
 	int size = 40;
 	double strike = 100;

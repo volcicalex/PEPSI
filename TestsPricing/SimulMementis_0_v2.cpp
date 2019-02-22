@@ -6,7 +6,7 @@
 #include "pnl/pnl_finance.h"
 
 
-TEST(spot_0, SimulMementis5) {
+TEST(spot_0_mem, SimulMementis5) {
 
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 	double rho = 0;
