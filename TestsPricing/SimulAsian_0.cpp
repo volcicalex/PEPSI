@@ -40,7 +40,7 @@ TEST(spot_0, SimulAsian) {
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
 
-	printf("prix %f, ic %f \n", prix, ic);
+	//printf("prix %f, ic %f \n", prix, ic);
 
 	ASSERT_LE(4.67 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
 	ASSERT_GE(4.67 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";

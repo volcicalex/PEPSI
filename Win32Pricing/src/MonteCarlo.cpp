@@ -56,11 +56,16 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 {	
 	double prix = 0.0;
 	double ic = 0.0;
+	omp_set_num_threads(2);
 #pragma omp parallel 
 	{
+		/*int id = omp_get_thread_num();
+		int numThreads = omp_get_num_threads();
+		printf("Hello from thread %d of %d\n", id, numThreads);*/
 		double payoff;
-		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
-		pnl_rng_sseed(rng, 0);
+		PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
+		pnl_rng_init(rng, PNL_RNG_MERSENNE);
+		pnl_rng_sseed(rng, time(NULL));
 		PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 		pnl_mat_set_row(path, mod_->spot_, 0);
 #pragma omp for reduction(+:prix) reduction(+:ic)
@@ -74,10 +79,11 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 		pnl_rng_free(&rng);
 		pnl_mat_free(&path);
 	}
-
-	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
 	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
+	printf("variance = %f\n", ic);
 	ic = 1.96 * sqrt(ic / nbSamples_);
+	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
+	
 
 	p_prix = prix;
 	p_ic = ic;

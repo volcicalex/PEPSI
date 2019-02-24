@@ -38,7 +38,7 @@ TEST(spot_0, SimulBasket_1) {
 	double prix = 0.0;
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
-	printf("prix basket option %f, ic %f \n", prix, ic);
+	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 
 	ASSERT_LE(13.616294 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
@@ -85,7 +85,7 @@ TEST(spot_0_opm, SimulBasket_1_opm) {
 	double prix = 0.0;
 	double ic = 0.0;
 	mCarlo->price_opm(prix, ic);
-	printf("prix basket option %f, ic %f \n", prix, ic);
+	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 
 	ASSERT_LE(13.616294 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";

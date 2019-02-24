@@ -37,8 +37,8 @@ TEST(spot_0, SimulCall) {
 	double ic = 0.0;
 	mCarlo->price(prix, ic);
 	double prix2 = pnl_bs_call(100, strike, T, r, 0, 0.2);
-	printf("prix %f, ic %f \n", prix, ic);
-	printf("prix2 %f \n", prix2);
+	//printf("prix %f, ic %f \n", prix, ic);
+	//printf("prix2 %f \n", prix2);
 	GTEST_ASSERT_LE(abs(prix - prix2), ic);
 
 	delete mCarlo;
@@ -74,9 +74,22 @@ TEST(spot_0_opm, SimulCall_opm) {
 
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price_opm(prix, ic);
+	/*
+	double prix3 = 0.0;
+	double ic3 = 0.0;
+	*/
 	double prix2 = pnl_bs_call(100, strike, T, r, 0, 0.2);
-	printf("prix %f, ic %f \n", prix, ic);
+	/*
+	for (int i = 0; i < 5; i++)
+	{
+		printf("prix th %f\n", prix2);
+		mCarlo->price_opm(prix, ic);
+		printf("prix opm %f, ic %f, abs %f \n", prix, ic, abs(prix - prix2));
+		mCarlo->price(prix3, ic3);
+		printf("prix %f, ic %f, abs %f \n", prix3, ic3, abs(prix3 - prix2));
+	}*/
+	mCarlo->price_opm(prix, ic);
+	//printf("prix %f, ic %f \n", prix, ic);
 	GTEST_ASSERT_LE(abs(prix - prix2), ic);
 
 	delete mCarlo;
