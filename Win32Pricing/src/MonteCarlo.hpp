@@ -58,6 +58,18 @@ public:
 	void price(const PnlMat *past, double t, double &prix, double &ic);
 
 	/**
+	 * Calcule le prix de l'option à la date t version parallele open mp
+	 *
+	 * @param[in]  past contient la trajectoire du sous-jacent
+	 * jusqu'à l'instant t
+	 * @param[in] t date à laquelle le calcul est fait
+	 * @param[out] prix contient le prix
+	 * @param[out] ic contient la largeur de l'intervalle
+	 * de confiance sur le calcul du prix
+	 */
+	void price_opm(const PnlMat *past, double t, double &prix, double &ic);
+
+	/**
 	 * Calcule le delta de l'option à la date t
 	 *
 	 * @param[in] past contient la trajectoire du sous-jacent

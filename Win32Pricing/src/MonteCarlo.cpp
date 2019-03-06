@@ -26,7 +26,6 @@ MonteCarlo::MonteCarlo(Model *mod, Option *opt, PnlRng *rng, double fdStep, int 
 	* @param[out] ic largeur de l'intervalle de confiance
 */
 void MonteCarlo::price(double &prix, double &ic) {
-
 	double payoff;
 	prix = 0;
 	double esp_carre = 0;
@@ -42,8 +41,6 @@ void MonteCarlo::price(double &prix, double &ic) {
 	double estimateur_carre = exp(-2 * mod_->r_*opt_->T_)*(esp_carre / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
 	prix *= exp(-mod_->r_*opt_->T_) / nbSamples_;
 	ic = 1.96 * sqrt(estimateur_carre / nbSamples_);
-
-
 	pnl_mat_free(&path);
 }
 
@@ -57,17 +54,13 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 	double prix = 0.0;
 	double ic = 0.0;
 	omp_set_num_threads(2);
+	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+	pnl_mat_set_row(path, mod_->spot_, 0);
 #pragma omp parallel 
 	{
-		/*int id = omp_get_thread_num();
-		int numThreads = omp_get_num_threads();
-		printf("Hello from thread %d of %d\n", id, numThreads);*/
 		double payoff;
-		PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
-		pnl_rng_init(rng, PNL_RNG_MERSENNE);
+		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
 		pnl_rng_sseed(rng, time(NULL));
-		PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
-		pnl_mat_set_row(path, mod_->spot_, 0);
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
 		{
@@ -77,14 +70,11 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 			ic += payoff * payoff;
 		}
 		pnl_rng_free(&rng);
-		pnl_mat_free(&path);
 	}
 	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
-	printf("variance = %f\n", ic);
 	ic = 1.96 * sqrt(ic / nbSamples_);
 	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
-	
-
+	pnl_mat_free(&path);
 	p_prix = prix;
 	p_ic = ic;
 }
@@ -123,6 +113,51 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
 
 	pnl_mat_free(&path);
 }
+
+/**
+ * Calcule le prix de l'option à la date t version parallele open mp
+ *
+ * @param[in]  past contient la trajectoire du sous-jacent
+ * jusqu'à l'instant t
+ * @param[in] t date à laquelle le calcul est fait
+ * @param[out] prix contient le prix
+ * @param[out] ic contient la largeur de l'intervalle
+ * de confiance sur le calcul du prix
+ */
+void MonteCarlo::price_opm(const PnlMat *past, double t, double &p_prix, double &p_ic) {
+
+	double prix = 0.0;
+	double ic = 0.0;
+	omp_set_num_threads(2);
+	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, opt_->size_);
+	pnl_mat_set_subblock(path, past, 0, 0);
+#pragma omp parallel 
+	{
+		/*int id = omp_get_thread_num();
+		int numThreads = omp_get_num_threads();
+		printf("Hello from thread %d of %d\n", id, numThreads);*/
+		double payoff;
+		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
+		pnl_rng_sseed(rng, 0);
+#pragma omp for reduction(+:prix) reduction(+:ic)
+		for (int i = 0; i < nbSamples_; i++)
+		{
+			mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng, past);
+			payoff = opt_->payoff(path);
+			prix += payoff;
+			ic += payoff * payoff;
+		}
+		pnl_rng_free(&rng);
+	}
+	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
+	//printf("variance = %f\n", ic);
+	ic = 1.96 * sqrt(ic / nbSamples_);
+	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
+	pnl_mat_free(&path);
+	p_prix = prix;
+	p_ic = ic;
+}
+
 
 /**
  * Calcule le delta de l'option à la date t

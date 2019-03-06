@@ -10,7 +10,7 @@
 using namespace std;
 
 
-TEST(spot_0_graph, SimulBasket0) {
+TEST(spot_graph_0, SimulBasket0) {
 	int size = 40;
 	double strike = 100;
 	double T = 3;

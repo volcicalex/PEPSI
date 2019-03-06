@@ -10,7 +10,7 @@
 using namespace std;
 
 
-TEST(spot_0_graph, SimulCall) {
+TEST(spot_graph_0, SimulCall) {
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 
 	int size = 1;

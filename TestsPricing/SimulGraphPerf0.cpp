@@ -10,7 +10,7 @@
 using namespace std;
 
 
-TEST(spot_0_graph, SimulPerf0) {
+TEST(spot_graph_0, SimulPerf0) {
 	
 	int size = 5;
 	double T = 2.0;

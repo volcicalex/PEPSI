@@ -10,7 +10,7 @@
 using namespace std;
 
 
-TEST(spot_0_graph, SimulAsian) {
+TEST(spot_graph_0, SimulAsian) {
 	int size = 2;
 	double strike = 100;
 	double T = 1.5;

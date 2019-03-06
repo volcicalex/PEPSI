@@ -90,7 +90,8 @@ TEST(spot_0_opm, SimulCall_opm) {
 	}*/
 	mCarlo->price_opm(prix, ic);
 	//printf("prix %f, ic %f \n", prix, ic);
-	GTEST_ASSERT_LE(abs(prix - prix2), ic);
+	//GTEST_ASSERT_LE(abs(prix - prix2), ic);
+	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
 	delete mCarlo;
 }
