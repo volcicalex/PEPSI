@@ -28,6 +28,37 @@ BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *s
 	Gi = pnl_vect_create_from_zero(2);
 	Ld = pnl_vect_create_from_zero(2);
 }
+/**
+* Constructeur de la classe dans le cas des taux de change
+* @param[in] nbAssets : nombre d'actifs du modèle : domestiques + etrangers
+* @param[in] nbMarkets : nombre de marchés differents
+* @param[in] size : nombre d'actifs du modèle : nbAssets + nbMarkets
+* @param[in]  nbAssetsPerMarket : vecteurs de nombre d'actifs par marché
+* @param[in]  r : le taux d'intérêt sans risque domestique
+* @param[in]  rho : matrice de corrélation
+* @param[in]  sigma : vecteur de volatilités : domestiques + etrangers + taux de change
+* @param[in]  spot : valeurs initiales des sous-jacents : domestiques + etrangers en domestique + sans risque en domestique
+* @param[in]  trend : tendance du modèle
+*/
+BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlVect *nbAssetsPerMarket, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
+
+	nbAssets_ = nbAssets;
+	nbMarkets_ = nbMarkets_;
+	size_ = size;
+	nbAssetsPerMarket_ = nbAssetsPerMarket_;
+	r_ = r;
+	rho_ = rho;
+	sigma_ = sigma;
+	spot_ = spot;
+	trend_ = trend;
+
+	L = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L, rho_);
+	pnl_mat_chol(L);
+	G = pnl_mat_new();
+	Gi = pnl_vect_new();
+	Ld = pnl_vect_new();
+}
 
 /**
 	* Génère une trajectoire du modèle et la stocke dans path

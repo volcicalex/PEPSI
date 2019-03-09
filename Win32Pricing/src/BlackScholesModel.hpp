@@ -27,7 +27,19 @@ public:
 	* @param[in]  trend : tendance du modèle
 	*/
 	BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend);
-
+	/**
+* Constructeur de la classe dans le cas des taux de change
+* @param[in] nbAssets : nombre d'actifs du modèle : domestiques + etrangers
+* @param[in] nbMarkets : nombre de marchés differents
+* @param[in] size : nombre d'actifs du modèle : nbAssets + nbMarkets
+* @param[in]  nbAssetsPerMarket : vecteurs de nombre d'actifs par marché
+* @param[in]  r : le taux d'intérêt sans risque domestique
+* @param[in]  rho : matrice de corrélation
+* @param[in]  sigma : vecteur de volatilités : domestiques + etrangers + taux de change
+* @param[in]  spot : valeurs initiales des sous-jacents : domestiques + etrangers en domestique + sans risque en domestique
+* @param[in]  trend : tendance du modèle
+*/
+	BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlVect *nbAssetsPerMarket, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend);
 	/**
 	 * Génère une trajectoire du modèle et la stocke dans path
 	 *

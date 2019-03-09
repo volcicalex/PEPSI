@@ -7,8 +7,19 @@
 class Model
 {
 public:
+
+	/*! nombre d'actifs du modèle */
+	int nbAssets_;
+
+	/*! nombre de marchés */
+	int nbMarkets_;
+
 	/*! nombre d'actifs du modèle */
 	int size_;
+
+	/*! nombre d'actifs par marché */
+	PnlVect *nbAssetsPerMarket_;
+
 	/*! taux d'intérêt */
 	double r_;
 	/*!  matrice de corrélation */
