@@ -37,27 +37,74 @@ BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *s
 * @param[in]  r : le taux d'intérêt sans risque domestique
 * @param[in]  rho : matrice de corrélation
 * @param[in]  sigma : vecteur de volatilités : domestiques + etrangers + taux de change
-* @param[in]  spot : valeurs initiales des sous-jacents : domestiques + etrangers en domestique + sans risque en domestique
+* @param[in]  spot : valeurs initiales des sous-jacents : domestiques + etrangers
+* @param[in]  spotChangeRate : valeurs initiales des taux de change
+* @param[in] spotRiscklessAsset : : valeurs initiales des actifs sans risque etrangers
 * @param[in]  trend : tendance du modèle
 */
-BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlVect *nbAssetsPerMarket, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
+BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlVectInt  *nbAssetsPerMarket, PnlVect *sigmaChangeRate, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *spotChangeRate, PnlVect *spotRiscklessAsset, PnlVect *trend) {
+	// Construire le nouveau vecteur des vols : sigma domestiques + sigma etrangers adaptés + sigma change rate
+	PnlVect *newSigma = pnl_vect_create(nbAssets + nbMarkets);
+	// copy the domestic part of sigma
+	int myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
+	int myForeignAssets;
 
-	nbAssets_ = nbAssets;
-	nbMarkets_ = nbMarkets_;
-	size_ = size;
-	nbAssetsPerMarket_ = nbAssetsPerMarket_;
-	r_ = r;
-	rho_ = rho;
-	sigma_ = sigma;
-	spot_ = spot;
-	trend_ = trend;
+	for (int i = 0; i < myCurrentAssets; i++) {
+		pnl_vect_set(newSigma,i, pnl_vect_get(sigma, i));
+	}
+	// modify the foreign part of sigma
+	for (int i = 1; i < nbMarkets; i++) {
+		myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket, i);
+		for (int j = 0; j < myForeignAssets; j++) {
+			pnl_vect_set(newSigma, myCurrentAssets + j, pnl_vect_get(sigma, myCurrentAssets + j) + pnl_vect_get(sigmaChangeRate, i));
+		}
+		myCurrentAssets = myCurrentAssets + myForeignAssets;
+	}
+	//copy all of sigmaChangeRate
+	for (int i = nbAssets; i < nbMarkets+ nbAssets; i++) {
+		pnl_vect_set(newSigma, i, pnl_vect_get(sigmaChangeRate, i));
+	}
+		// copy the domestic part of sigma
+	myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
+	for (int i = 0; i < myCurrentAssets; i++) {
+		pnl_vect_set(newSigma,i, pnl_vect_get(sigma, i));
+	}
+	// modify the foreign part of sigma
+	for (int i = 1; i < nbMarkets; i++) {
+		myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket, i);
+		for (int j = 0; j < myForeignAssets; j++) {
+			pnl_vect_set(newSigma, myCurrentAssets + j, pnl_vect_get(sigma, myCurrentAssets + j) + pnl_vect_get(sigmaChangeRate, i));
+		}
+		myCurrentAssets = myCurrentAssets + myForeignAssets;
+	}
+	//copy all of sigmaChangeRate
+	for (int i = nbAssets; i < nbMarkets+ nbAssets; i++) {
+		pnl_vect_set(newSigma, i, pnl_vect_get(sigmaChangeRate, i));
+	}
 
-	L = pnl_mat_create(size_, size_);
-	pnl_mat_clone(L, rho_);
-	pnl_mat_chol(L);
-	G = pnl_mat_new();
-	Gi = pnl_vect_new();
-	Ld = pnl_vect_new();
+
+
+
+	// Construire le nouveau vecteur des spots correspondents
+	PnlVect *newSpot = pnl_vect_create(nbAssets + nbMarkets);
+	// copy the domestic part of spot
+	myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
+	for (int i = 0; i < myCurrentAssets; i++) {
+		pnl_vect_set(newSpot, i, pnl_vect_get(spot, i));
+	}
+	// modify the foreign part of spot
+	for (int i = 1; i < nbMarkets; i++) {
+		myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket, i);
+		for (int j = 0; j < myForeignAssets; j++) {
+			pnl_vect_set(newSpot, myCurrentAssets + j, pnl_vect_get(spot, myCurrentAssets + j)*pnl_vect_get(spotChangeRate, i));
+		}
+		myCurrentAssets = myCurrentAssets + myForeignAssets;
+	}
+	//copy all of sigmaChangeRate
+	for (int i = nbAssets; i < nbMarkets + nbAssets; i++) {
+		pnl_vect_set(newSpot, i, pnl_vect_get(spotChangeRate, i)*pnl_vect_get(spotRiscklessAsset, i));
+	}
+	BlackScholesModel(nbAssets + nbMarkets, r, rho, newSigma, newSpot, trend);
 }
 
 /**
@@ -96,6 +143,8 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 		}
 	}
 }
+
+
 
 /**
  * Calcule une trajectoire du sous-jacent connaissant le

@@ -10,16 +10,14 @@ public:
 
 	/*! nombre d'actifs du modèle */
 	int nbAssets_;
-
 	/*! nombre de marchés */
 	int nbMarkets_;
-
 	/*! nombre d'actifs du modèle */
 	int size_;
-
 	/*! nombre d'actifs par marché */
 	PnlVect *nbAssetsPerMarket_;
-
+	/*! vecteur de volatilités des taux de change */
+	PnlVect *sigmaChangeRate_;
 	/*! taux d'intérêt */
 	double r_;
 	/*!  matrice de corrélation */
