@@ -7,6 +7,15 @@ public:
 	/* Valeur liquidative d'origine */
 	double VLO_;
 
+	/*! nombre de marchés */
+	int nbMarkets_;
+
+	/*! nombre d'actifs par marché */
+	PnlVectInt *nbAssetsPerMarket_;
+
+	/*! vecteur des tendances */
+	PnlVect *trend_;
+
 	/* Point d'entrée */
 	float PE_;
 
@@ -77,4 +86,10 @@ public:
 	 */
 	double remboursement_echeance(const PnlMat *path);
 
+	/*Change Rate Functions*/
+	double payoff_CR(const PnlMat *path);
+	double remboursement_echeance_CR(const PnlMat *path);
+	double calcul_plus_value_CR(const PnlMat *path);
+	void fill_dividendes_CR(const PnlMat *path);
+	void fill_performances_CR(const PnlMat *path);
 };
