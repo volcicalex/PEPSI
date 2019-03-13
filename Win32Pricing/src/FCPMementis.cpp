@@ -65,6 +65,39 @@ void FCPMementis::fill_performances_plaf(const PnlMat *path) {
 	}
 }
 
+
+/**
+* Remplit le vecteur de performances plafonnées dans le cas de differents marchés
+* tq path contient : domestique + etrangers en domestique + sans risque en domestique
+*/
+void FCPMementis::fill_performances_plaf_CR(const PnlMat *path) {
+	float So_d;
+	double perf_plaf;
+	int myForeignAssets;
+	int myCurrentAssets;
+	double step = T_/path->m;
+
+	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
+		perf_plaf = 0;
+		myForeignAssets = 0;
+		myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket_, 0); // nombre d'actifs domestiques
+		for (int d = 0; d < myCurrentAssets; d++) { // performance des actifs domestiques reste inchangée
+			So_d = MGET(path, 0, d);
+			perf_plaf += fmin(0.1, (MGET(path, i, d) - So_d * PE_) / So_d);
+		}
+		for (int m = 1; m < nbMarkets_; m++) {
+			myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket_, m);
+			for (int d = 0; d < myForeignAssets; d++) {
+				So_d = MGET(path, 0, myCurrentAssets + d);
+				perf_plaf += fmin(0.1, (MGET(path, i, myCurrentAssets + d) / So_d )
+					*(MGET(path, 0, size_ + m - 1) / MGET(path, i, size_ + m - 1))
+					*exp(pnl_vect_get(trend_, m) * (i * step)) - PE_);
+			}
+			myCurrentAssets = myCurrentAssets + myForeignAssets;
+		}
+		pnl_vect_set(performances_plaf_, i, perf_plaf / size_);
+	}
+}
 /**
 * Remplit le vecteur de dividendes pour chaque année
 */
@@ -195,7 +228,7 @@ void FCPMementis::fill_performances_CR(const PnlMat *path) {
 	double perf;
 	int myForeignAssets;
 	int myCurrentAssets;
-	double step = path->m;
+	double step = T_/path->m;
 
 	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
 		perf = 0;
