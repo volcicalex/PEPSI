@@ -49,7 +49,7 @@ public:
 	/**
 	* Remplit le vecteur de performances plafonnees sachant que path prend en compte les taux de change.
 	*/
-	void fill_performances_plaf_CR(const PnlMat *path) {
+	void fill_performances_plaf_CR(const PnlMat *path);
 
 	/**
 	 * Calcule le point d'entrée la trajectoire avec le vecteur de performances
