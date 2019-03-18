@@ -6,7 +6,7 @@
 #include "pnl/pnl_finance.h"
 
 /* Tests les dividendes reçus par l'investisseur dans le "cas defavorable" (cf brochure) */
-TEST(propMementis, CasDefavorable) {
+TEST(propMementis, CasDefavorable2) {
 
 	//printf("=== Cas defavorable === \n");
 

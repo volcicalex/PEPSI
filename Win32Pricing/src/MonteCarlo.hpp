@@ -69,6 +69,7 @@ public:
 	 */
 	void price_opm(const PnlMat *past, double t, double &prix, double &ic);
 
+
 	/**
 	 * Calcule le delta de l'option à la date t
 	 *

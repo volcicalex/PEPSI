@@ -53,14 +53,18 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 {	
 	double prix = 0.0;
 	double ic = 0.0;
-	omp_set_num_threads(2);
+	double payoff;
+
+	omp_set_num_threads(4);
+
 	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 	pnl_mat_set_row(path, mod_->spot_, 0);
+
 #pragma omp parallel 
 	{
-		double payoff;
 		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
 		pnl_rng_sseed(rng, time(NULL));
+
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
 		{
@@ -71,15 +75,16 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 		}
 		pnl_rng_free(&rng);
 	}
+
 	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
 	ic = 1.96 * sqrt(ic / nbSamples_);
 	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
+
 	pnl_mat_free(&path);
+
 	p_prix = prix;
 	p_ic = ic;
 }
-
-
 
 /**
  * Calcule le prix de l'option à la date t
@@ -157,6 +162,8 @@ void MonteCarlo::price_opm(const PnlMat *past, double t, double &p_prix, double 
 	p_prix = prix;
 	p_ic = ic;
 }
+
+
 
 
 /**
