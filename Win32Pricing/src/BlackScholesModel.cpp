@@ -13,7 +13,6 @@
 * @param[in]  trend : tendance du modèle
 */
 BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
-
 	size_ = size;
 	r_ = r;
 	rho_ = rho;
@@ -84,7 +83,27 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 		pnl_vect_set(newSpot, i, pnl_vect_get(spotChangeRate, i - nbAssets)*pnl_vect_get(spotRiscklessAsset, i - nbAssets));
 	}
 
-	BlackScholesModel(nbAssets + nbMarkets, r, rho, newSigma, newSpot, trend);
+
+	size_ = nbAssets + nbMarkets;
+	r_ = r;
+	rho_ = rho;
+	sigma_ = newSigma;
+	spot_ = newSpot;
+	trend_ = trend;
+
+	L = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L, rho_);
+	pnl_mat_chol(L);
+	G = pnl_mat_create_from_zero(2, 2);
+	Gi = pnl_vect_create_from_zero(2);
+	Ld = pnl_vect_create_from_zero(2);
+	//printf("taille newSpot %d \n", newSpot->size);
+	//BlackScholesModel(nbAssets + nbMarkets, r, rho, newSigma, newSpot, trend);
+
+
+	//printf("new SIZE %d \n", this->size_);
+	//printf("%d \n", nbAssets + nbMarkets);
+	//pnl_vect_print(newSpot);
 }
 
 /**
@@ -105,15 +124,11 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 	double st;
 
 	pnl_mat_rng_normal(G, nbTimeSteps, size_, rng);
-
-
 	for (int d = 0; d < size_; d++) {
-
 		pnl_mat_get_row(Ld, L, d);
 		sigma = pnl_vect_get(sigma_, d);
 		expo_t = exp((r_ - sigma * sigma / 2) * step);
 		Wt = sigma * sqrt_step;
-
 		for (int i = 1; i < nbTimeSteps + 1; i++) {
 
 			pnl_mat_get_row(Gi, G, i - 1);
