@@ -176,7 +176,7 @@ TEST(spot_t, SimulBasket2) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T-t (premiere methode asset)
  */
-TEST(spot_t_opm, SimulBasket) {
+TEST(spot_t_opm, SimulBasket_opm) {
 
 	//printf("=== Methode 1 === \n");
 
@@ -260,7 +260,7 @@ TEST(spot_t_opm, SimulBasket) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T (premiere methode asset)
  */
-TEST(spot_t_opm, SimulBasket2) {
+TEST(spot_t_opm, SimulBasket2_opm) {
 
 	//printf("=== Methode 2 === \n");
 

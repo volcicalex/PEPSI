@@ -151,7 +151,7 @@ TEST(spot_t, SimulAsian2) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T (premiere methode asset)
  */
-TEST(spot_t_opm, SimulAsian2) {
+TEST(spot_t_opm, SimulAsian2_opm) {
 
 	//printf("=== Methode 2 === \n");
 

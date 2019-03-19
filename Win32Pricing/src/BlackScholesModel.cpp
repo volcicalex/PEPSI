@@ -114,7 +114,7 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 	* C'est une matrice de taille (nbTimeSteps+1) x d
 	* @param[in] T  maturité
 	* @param[in] nbTimeSteps nombre de dates de constatation
-	*/
+*/
 void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
 
 	double step = T / nbTimeSteps;
@@ -144,6 +144,54 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 	}
 }
 
+/**
+	* Génère une trajectoire du modèle et la stocke dans path
+	* version thread_safe
+	*
+	* @param[out] path contient une trajectoire du modèle.
+	* C'est une matrice de taille (nbTimeSteps+1) x d
+	* @param[in] T  maturité
+	* @param[in] nbTimeSteps nombre de dates de constatation
+*/
+void BlackScholesModel::asset_opm(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
+
+	double step = T / nbTimeSteps;
+	double sqrt_step = sqrt(step);
+	double sigma;
+	double expo_t;
+	double Wt;
+	double st;
+
+	PnlMat *L_ = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L_, rho_);
+	pnl_mat_chol(L_);
+	PnlMat *G_ = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi_ = pnl_vect_create_from_zero(2);
+	PnlVect *Ld_ = pnl_vect_create_from_zero(2);
+
+	pnl_mat_rng_normal(G_, nbTimeSteps, size_, rng);
+
+
+	for (int d = 0; d < size_; d++) {
+
+		pnl_mat_get_row(Ld_, L_, d);
+		sigma = pnl_vect_get(sigma_, d);
+		expo_t = exp((r_ - sigma * sigma / 2) * step);
+		Wt = sigma * sqrt_step;
+
+		for (int i = 1; i < nbTimeSteps + 1; i++) {
+
+			pnl_mat_get_row(Gi_, G_, i - 1);
+			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi_, Ld_));
+			pnl_mat_set(path, i, d, st);
+
+		}
+	}
+	pnl_mat_free(&L_);
+	pnl_mat_free(&G_);
+	pnl_vect_free(&Ld_);
+	pnl_vect_free(&Gi_);
+}
 
 
 /**
@@ -197,6 +245,71 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 			pnl_mat_set(path, i, d, st);
 		}
 	}
+}
+
+/**
+ * Calcule une trajectoire du sous-jacent connaissant le
+ * passé jusqu' à la date t
+ * version thread-safe
+ *
+ * @param[out] path  contient une trajectoire du sous-jacent
+ * donnée jusqu'à l'instant t par la matrice past
+ * @param[in] t date jusqu'à laquelle on connait la trajectoire.
+ * t n'est pas forcément une date de discrétisation
+ * @param[in] nbTimeSteps nombre de pas de constatation
+ * @param[in] T date jusqu'à laquelle on simule la trajectoire
+ * @param[in] past trajectoire réalisée jusqu'a la date t
+ */
+void BlackScholesModel::asset_opm(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) {
+
+	double epsilon = 0.00000001;
+	double step = T / nbTimeSteps;
+	double sqrt_step = sqrt(step);
+	double decimal_step = t / step;
+	double floor_step = floor(decimal_step);
+	int nextIndex = ((floor_step - epsilon < decimal_step) && (decimal_step < floor_step + epsilon)) ? floor_step : ceil(decimal_step);
+	double shiftStep = nextIndex * step - t;
+
+	double sigma;
+	double expo_t;
+	double Wt;
+	double st;
+
+	PnlMat *L_ = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L_, rho_);
+	pnl_mat_chol(L_);
+	PnlMat *G_ = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi_ = pnl_vect_create_from_zero(2);
+	PnlVect *Ld_ = pnl_vect_create_from_zero(2);
+
+	pnl_mat_rng_normal(G_, nbTimeSteps + 1 - nextIndex, size_, rng);
+
+	for (int d = 0; d < size_; d++) {
+
+		pnl_mat_get_row(Ld_, L_, d);
+		sigma = pnl_vect_get(sigma_, d);
+
+		/* Si t n'est pas un pas de discrétisation alors on simule le prochain pas */
+		if (shiftStep != 0.0) {
+			pnl_mat_get_row(Gi_, G_, 0);
+			st = MGET(past, nextIndex, d) * exp((r_ - sigma * sigma / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld_, Gi_));
+			pnl_mat_set(path, nextIndex, d, st);
+		}
+
+		expo_t = exp((r_ - sigma * sigma / 2) * step);
+		Wt = sigma * sqrt_step;
+
+		for (int i = nextIndex + 1; i < nbTimeSteps + 1; i++) {
+
+			pnl_mat_get_row(Gi_, G_, i - nextIndex);
+			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi_, Ld_));
+			pnl_mat_set(path, i, d, st);
+		}
+	}
+	pnl_mat_free(&L_);
+	pnl_mat_free(&G_);
+	pnl_vect_free(&Ld_);
+	pnl_vect_free(&Gi_);
 }
 
 /**

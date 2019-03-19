@@ -172,7 +172,7 @@ TEST(spot_t, SimulPerf2) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T-t (premiere methode asset)
  */
-TEST(spot_t_opm, SimulPerf) {
+TEST(spot_t_opm, SimulPerf_opm) {
 
 	//printf("=== Methode 1 === \n");
 
@@ -222,8 +222,8 @@ TEST(spot_t_opm, SimulPerf) {
 	// Calcul du prix connaissant le passe jusqu'en t
 	mCarlo->price_opm(perfPath, t, prix, ic);
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	//printf("prix t echeance T : %f\n", prix);
+	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -242,8 +242,8 @@ TEST(spot_t_opm, SimulPerf) {
 	// Calcul du prix en 0 echeance T-t
 	mCarlo2->price_opm(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	//printf("prix 0 echeance T-t : %f\n", prix2);
+	//printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
@@ -255,7 +255,7 @@ TEST(spot_t_opm, SimulPerf) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T (premiere methode asset)
  */
-TEST(spot_t_opm, SimulPerf2) {
+TEST(spot_t_opm, SimulPerf2_opm) {
 
 	//printf("=== Methode 2 === \n");
 
@@ -303,8 +303,8 @@ TEST(spot_t_opm, SimulPerf2) {
 	// Calcul du prix connaissant le passe jusqu'en t
 	mCarlo->price_opm(past, t, prix, ic);
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	//printf("prix t echeance T : %f\n", prix);
+	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -323,8 +323,8 @@ TEST(spot_t_opm, SimulPerf2) {
 	// Calcul du prix en 0 echeance T-t
 	mCarlo2->price_opm(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	//printf("prix 0 echeance T-t : %f\n", prix2);
+	//printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
