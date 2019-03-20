@@ -286,5 +286,22 @@ TEST(spot_t, SimulMementis5) {
 
 	pnl_vect_print(prixMementis);
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
+	pnl_mat_free(&past1);
+	pnl_mat_free(&past2);
+	pnl_mat_free(&past3);
+	pnl_mat_free(&past4);
+	pnl_mat_free(&past5);
+	pnl_mat_free(&past6);
+	pnl_mat_free(&past7);
+	pnl_mat_free(&past8);
+	pnl_mat_free(&past9);
+	pnl_mat_free(&past10);
+	pnl_mat_free(&past11);
+	pnl_mat_free(&past12);
 	delete mCarlo;
 }

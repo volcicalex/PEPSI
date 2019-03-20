@@ -101,7 +101,8 @@ TEST(spot_0_opm, SimulCall_opm) {
 		printf("prix %f, ic %f, abs %f \n", prix3, ic3, abs(prix3 - prix2));
 	}*/
 	mCarlo->price(prix, ic);
-	//printf("prix %f, ic %f \n", prix, ic);
+	printf("prix %f, ic %f \n", prix, ic);
+	printf("prix %f \n", prix2);
 	//GTEST_ASSERT_LE(abs(prix - prix2), ic);
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 

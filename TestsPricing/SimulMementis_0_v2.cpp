@@ -15,7 +15,7 @@ TEST(spot_0_mem, SimulMementis5) {
 
 	FCPMementis *mementis = new FCPMementis(nbTimeSteps);
 	
-	const char *sigmafile = "../data/vol_mementis_test.dat";
+	const char *sigmafile = "../data/vol_mementis.dat";
 	PnlVect *sigma = pnl_vect_create_from_file(sigmafile);
 	//PnlVect *sigma = pnl_vect_create_from_scalar(mementis->size_, 0.2);
 

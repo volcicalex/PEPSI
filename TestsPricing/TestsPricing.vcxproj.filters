@@ -41,6 +41,54 @@
     <ClCompile Include="SimulPerf_t.cpp">
       <Filter>Pricing_t</Filter>
     </ClCompile>
+    <ClCompile Include="MementisCasFav.cpp">
+      <Filter>TestsMementis</Filter>
+    </ClCompile>
+    <ClCompile Include="MementisCasDefav.cpp">
+      <Filter>TestsMementis</Filter>
+    </ClCompile>
+    <ClCompile Include="MementisCasMedian1.cpp">
+      <Filter>TestsMementis</Filter>
+    </ClCompile>
+    <ClCompile Include="MementisCasMedian2.cpp">
+      <Filter>TestsMementis</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulMementis_0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulMementis_t.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulMementis_t2.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulMementis_0_v2.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphCall0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphCallt.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphBasket0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphAsian0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphPerf0.cpp">
+      <Filter>Pricing_0</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphBaskett.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphPerft.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulGraphAsiant.cpp">
+      <Filter>Pricing_t</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -52,6 +100,15 @@
   <ItemGroup>
     <Filter Include="Pricing_0">
       <UniqueIdentifier>{ebce49ec-adb3-4c3a-b2e0-34e76cf88496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestsDelta">
+      <UniqueIdentifier>{1eabd344-9511-416e-8663-126901f7bd34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Delta">
+      <UniqueIdentifier>{e4073b8e-40b4-4399-ab41-98c6a2d0baec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestsMementis">
+      <UniqueIdentifier>{67924cc9-0b6b-4792-b5a7-8ed9a17b5962}</UniqueIdentifier>
     </Filter>
     <Filter Include="Pricing_t">
       <UniqueIdentifier>{b1271d2d-0500-42c5-ad99-ab57b6ad44c6}</UniqueIdentifier>

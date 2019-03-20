@@ -84,6 +84,13 @@ TEST(spot_t_simple, SimulPerf) {
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
@@ -166,6 +173,13 @@ TEST(spot_t_simple, SimulPerf2) {
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
@@ -249,6 +263,13 @@ TEST(spot_t_opm, SimulPerf_opm) {
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
@@ -330,6 +351,13 @@ TEST(spot_t_opm, SimulPerf2_opm) {
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
