@@ -6,9 +6,9 @@
 
 /**
 * Programme de test pour le prix en 0 d'une option basket
+* non parallelise
 */
-
-TEST(spot_0, SimulBasket) {
+TEST(spot_0_simple, SimulBasket) {
 
 	int size = 40;
 	double strike = 100;
@@ -37,7 +37,7 @@ TEST(spot_0, SimulBasket) {
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, bOption, rng, fdStep, n_samples);
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price(prix, ic);
+	mCarlo->price_simple(prix, ic);
 	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 	//ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
@@ -45,10 +45,18 @@ TEST(spot_0, SimulBasket) {
 	//ASSERT_TRUE(abs((ic / 1.96) - 0.025) / 0.025 <= 0.05); // erreur relative inf a 5%
 	ASSERT_TRUE(abs(prix - 13.627) / 13.627 <= 0.05); // ecart relatif inf a 5%
 
-
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&payoff_coef);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
+/**
+* Programme de test pour le prix en 0 d'une option basket
+* parallelise
+*/
 TEST(spot_0_opm, SimulBasket_opm) {
 
 	int size = 40;
@@ -77,7 +85,7 @@ TEST(spot_0_opm, SimulBasket_opm) {
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, bOption, rng, fdStep, n_samples);
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price_opm(prix, ic);
+	mCarlo->price(prix, ic);
 	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 	//ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
@@ -85,5 +93,10 @@ TEST(spot_0_opm, SimulBasket_opm) {
 	//ASSERT_TRUE(abs((ic / 1.96) - 0.025) / 0.025 <= 0.05); // erreur relative inf a 5%
 	ASSERT_TRUE(abs(prix - 13.627) / 13.627 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&payoff_coef);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }

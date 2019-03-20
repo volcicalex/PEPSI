@@ -9,8 +9,9 @@
 /* Methode 1 de test du prix en t 
  * On verifie si le prix calcule en connaissant le passe jusqu'en t avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T-t (premiere methode asset)
+ * non parallelise
  */
-TEST(spot_t, SimulCall) {
+TEST(spot_t_simple, SimulCall) {
 
 	//printf("=== Methode 1 === \n");
 
@@ -58,7 +59,7 @@ TEST(spot_t, SimulCall) {
 	pnl_mat_extract_subblock(past, callPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past, t, prix, ic);
+	mCarlo->price_simple(past, t, prix, ic);
 
 	/*printf("prix t echeance T : %f\n", prix);
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
@@ -78,7 +79,7 @@ TEST(spot_t, SimulCall) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, call2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price(prix2, ic2);
+	mCarlo2->price_simple(prix2, ic2);
 
 	/*printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
@@ -92,8 +93,9 @@ TEST(spot_t, SimulCall) {
 /* Methode 2 de test du prix en t
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T (premiere methode asset)
+ * non parallelise
  */
-TEST(spot_t, SimulCall2) {
+TEST(spot_t_simple, SimulCall2) {
 
 	//printf("=== Methode 2 === \n");
 
@@ -140,7 +142,7 @@ TEST(spot_t, SimulCall2) {
 	pnl_mat_extract_subblock(past, callPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past, t, prix, ic);
+	mCarlo->price_simple(past, t, prix, ic);
 
 	/*printf("prix t echeance T : %f\n", prix);
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
@@ -160,7 +162,7 @@ TEST(spot_t, SimulCall2) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, call2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price(prix2, ic2);
+	mCarlo2->price_simple(prix2, ic2);
 
 	/*printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
@@ -224,7 +226,7 @@ TEST(spot_t_opm, SimulCall_opm) {
 	pnl_mat_extract_subblock(past, callPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price_opm(past, t, prix, ic);
+	mCarlo->price(past, t, prix, ic);
 
 	//printf("prix t echeance T : %f\n", prix);
 	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
@@ -244,7 +246,7 @@ TEST(spot_t_opm, SimulCall_opm) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, call2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price_opm(prix2, ic2);
+	mCarlo2->price(prix2, ic2);
 
 	//printf("prix 0 echeance T-t : %f\n", prix2);
 	//printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
@@ -306,7 +308,7 @@ TEST(spot_t_opm, SimulCall2_opm) {
 	pnl_mat_extract_subblock(past, callPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price_opm(past, t, prix, ic);
+	mCarlo->price(past, t, prix, ic);
 
 	//printf("prix t echeance T : %f\n", prix);
 	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
@@ -326,7 +328,7 @@ TEST(spot_t_opm, SimulCall2_opm) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, call2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price_opm(prix2, ic2);
+	mCarlo2->price(prix2, ic2);
 
 	//printf("prix 0 echeance T-t : %f\n", prix2);
 	//printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);

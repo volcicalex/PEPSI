@@ -36,14 +36,14 @@ public:
 	 * @param[out] prix valeur de l'estimateur Monte Carlo
 	 * @param[out] ic largeur de l'intervalle de confiance
 	 */
-	void price(double &prix, double &ic);
+	void price_simple(double &prix, double &ic);
 
 	/**
 	* Calcule le prix de l'option à la date 0 version parallelisee open mp
 	* @param[out] prix valeur de l'estimateur Monte Carlo
 	* @param[out] ic largeur de l'intervalle de confiance
 */
-	void price_opm(double &prix, double &ic);
+	void price(double &prix, double &ic);
 
 	/**
 	 * Calcule le prix de l'option à la date t
@@ -55,7 +55,7 @@ public:
 	 * @param[out] ic contient la largeur de l'intervalle
 	 * de confiance sur le calcul du prix
 	 */
-	void price(const PnlMat *past, double t, double &prix, double &ic);
+	void price_simple(const PnlMat *past, double t, double &prix, double &ic);
 
 	/**
 	 * Calcule le prix de l'option à la date t version parallele open mp
@@ -67,7 +67,7 @@ public:
 	 * @param[out] ic contient la largeur de l'intervalle
 	 * de confiance sur le calcul du prix
 	 */
-	void price_opm(const PnlMat *past, double t, double &prix, double &ic);
+	void price(const PnlMat *past, double t, double &prix, double &ic);
 
 
 	/**

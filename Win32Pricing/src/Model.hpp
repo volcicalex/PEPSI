@@ -38,7 +38,7 @@ public:
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] nbTimeSteps nombre de dates de constatation
 	 */
-	virtual void asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) = 0;
+	virtual void asset_simple(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) = 0;
 
 	/**
 	 * Génère une trajectoire du modèle et la stocke dans path
@@ -50,7 +50,7 @@ public:
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] nbTimeSteps nombre de dates de constatation
 	 */
-	virtual void asset_opm(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) = 0;
+	virtual void asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) = 0;
 
 
 	/**
@@ -66,7 +66,7 @@ public:
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] past trajectoire réalisée jusqu'a la date t
 	 */
-	virtual void asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) = 0;
+	virtual void asset_simple(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) = 0;
 
 	/**
 	 * Calcule une trajectoire du sous-jacent connaissant le
@@ -82,7 +82,7 @@ public:
 	 * @param[in] rng generateur de nombres aleatoires
 	 * @param[in] past trajectoire réalisée jusqu'a la date t
 	 */
-	virtual void asset_opm(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) = 0;
+	virtual void asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) = 0;
 
 	/**
 	 * Shift d'une trajectoire du sous-jacent

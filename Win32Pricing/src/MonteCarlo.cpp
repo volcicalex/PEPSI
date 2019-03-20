@@ -25,7 +25,7 @@ MonteCarlo::MonteCarlo(Model *mod, Option *opt, PnlRng *rng, double fdStep, int 
 	* @param[out] prix valeur de l'estimateur Monte Carlo
 	* @param[out] ic largeur de l'intervalle de confiance
 */
-void MonteCarlo::price(double &prix, double &ic) {
+void MonteCarlo::price_simple(double &prix, double &ic) {
 	double payoff;
 	prix = 0;
 	double esp_carre = 0;
@@ -33,7 +33,7 @@ void MonteCarlo::price(double &prix, double &ic) {
 	pnl_mat_set_row(path, mod_->spot_, 0);
 
 	for (int j = 0; j < nbSamples_; ++j) {
-		mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng_);
+		mod_->asset_simple(path, opt_->T_, opt_->nbTimeSteps_, rng_);
 		payoff = opt_->payoff(path);		
 		prix += payoff;
 		esp_carre += payoff*payoff;
@@ -49,7 +49,7 @@ void MonteCarlo::price(double &prix, double &ic) {
 	* @param[out] prix valeur de l'estimateur Monte Carlo
 	* @param[out] ic largeur de l'intervalle de confiance
 */
-void MonteCarlo::price_opm(double &p_prix, double &p_ic)
+void MonteCarlo::price(double &p_prix, double &p_ic)
 {	
 	double prix = 0.0;
 	double ic = 0.0;
@@ -69,7 +69,7 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
 		{
-			mod_->asset_opm(path, opt_->T_, opt_->nbTimeSteps_, rng);
+			mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng);
 			payoff = opt_->payoff(path);
 			prix += payoff;
 			ic += payoff * payoff;
@@ -98,7 +98,7 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
  * @param[out] ic contient la largeur de l'intervalle
  * de confiance sur le calcul du prix
  */
-void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
+void MonteCarlo::price_simple(const PnlMat *past, double t, double &prix, double &ic) {
 
 	double payoff;
 	prix = 0;
@@ -108,7 +108,7 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
 	pnl_mat_set_subblock(path, past, 0, 0);
 
 	for (int i = 0; i < nbSamples_; ++i) {
-		mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
+		mod_->asset_simple(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
 		payoff = opt_->payoff(path);
 		prix += payoff;
 		esp_carre += payoff*payoff;
@@ -131,7 +131,7 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
  * @param[out] ic contient la largeur de l'intervalle
  * de confiance sur le calcul du prix
  */
-void MonteCarlo::price_opm(const PnlMat *past, double t, double &p_prix, double &p_ic) {
+void MonteCarlo::price(const PnlMat *past, double t, double &p_prix, double &p_ic) {
 
 	double prix = 0.0;
 	double ic = 0.0;
@@ -151,7 +151,7 @@ void MonteCarlo::price_opm(const PnlMat *past, double t, double &p_prix, double 
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
 		{
-			mod_->asset_opm(path, t, opt_->T_, opt_->nbTimeSteps_, rng, past);
+			mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng, past);
 			payoff = opt_->payoff(path);
 			prix += payoff;
 			ic += payoff * payoff;

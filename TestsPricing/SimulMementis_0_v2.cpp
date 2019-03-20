@@ -51,5 +51,6 @@ TEST(spot_0_mem, SimulMementis5) {
 	pnl_mat_free(&rho_mat);
 	pnl_vect_free(&sigma);
 	pnl_vect_free(&spot);
+	pnl_vect_free(&trend);
 	delete mCarlo;
 }

@@ -7,9 +7,9 @@
 
 /**
 * Programme de test pour le prix en 0 d'une option asiatique
+* non parallelise
 */
-
-TEST(spot_0, SimulAsian) {
+TEST(spot_0_simple, SimulAsian) {
 
 	int size = 2;
 	double strike = 100;	
@@ -39,7 +39,7 @@ TEST(spot_0, SimulAsian) {
 
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price(prix, ic);
+	mCarlo->price_simple(prix, ic);
 
 	//printf("prix %f, ic %f \n", prix, ic);
 
@@ -47,10 +47,18 @@ TEST(spot_0, SimulAsian) {
 	//ASSERT_GE(4.67 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
 	ASSERT_TRUE(abs(prix - 4.67) / 4.67 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&payoff_coef);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
-
+/**
+* Programme de test pour le prix en 0 d'une option asiatique
+* parallelise
+*/
 TEST(spot_0_opm, SimulAsian_opm) {
 
 	int size = 2;
@@ -81,7 +89,7 @@ TEST(spot_0_opm, SimulAsian_opm) {
 
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price_opm(prix, ic);
+	mCarlo->price(prix, ic);
 
 	//printf("prix : %f, ic : %f \n", prix, ic);
 
@@ -90,6 +98,10 @@ TEST(spot_0_opm, SimulAsian_opm) {
 	//ASSERT_TRUE(abs((ic / 1.96) - 0.029) / 0.029 <= 0.05); // ecart relatif inf a 5%
 	ASSERT_TRUE(abs(prix - 4.67) / 4.67 <= 0.05); // ecart relatif inf a 5%
 
-
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&payoff_coef);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
