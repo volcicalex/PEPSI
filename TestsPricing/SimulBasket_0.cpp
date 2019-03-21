@@ -37,7 +37,15 @@ TEST(spot_0_simple, SimulBasket) {
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, bOption, rng, fdStep, n_samples);
 	double prix = 0.0;
 	double ic = 0.0;
+
+	clock_t t1 = clock();
+
 	mCarlo->price_simple(prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 	//ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
@@ -85,7 +93,15 @@ TEST(spot_0_opm, SimulBasket_opm) {
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, bOption, rng, fdStep, n_samples);
 	double prix = 0.0;
 	double ic = 0.0;
+
+	clock_t t1 = clock();
+
 	mCarlo->price(prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 	//ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";

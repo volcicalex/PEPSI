@@ -142,7 +142,7 @@ void BlackScholesModel::asset_simple(PnlMat *path, double T, int nbTimeSteps, Pn
 	}
 	pnl_mat_free(&G);
 	pnl_vect_free(&Gi);
-
+	pnl_vect_free(&Ld);
 }
 
 /**

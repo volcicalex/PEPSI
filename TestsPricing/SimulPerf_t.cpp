@@ -57,7 +57,14 @@ TEST(spot_t_simple, SimulPerf) {
 	pnl_mat_extract_subblock(past, perfPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price_simple(perfPath, t, prix, ic);
+	clock_t t1 = clock();
+
+	mCarlo->price_simple(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 
 	/*printf("prix t echeance T : %f\n", prix);
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
@@ -146,7 +153,14 @@ TEST(spot_t_simple, SimulPerf2) {
 	pnl_mat_extract_subblock(past, perfpath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
+	clock_t t1 = clock();
+
 	mCarlo->price_simple(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 
 	/*printf("prix t echeance T : %f\n", prix);
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
@@ -236,7 +250,14 @@ TEST(spot_t_opm, SimulPerf_opm) {
 	pnl_mat_extract_subblock(past, perfPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(perfPath, t, prix, ic);
+	clock_t t1 = clock();
+
+	mCarlo->price(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 
 	//printf("prix t echeance T : %f\n", prix);
 	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
@@ -324,7 +345,14 @@ TEST(spot_t_opm, SimulPerf2_opm) {
 	pnl_mat_extract_subblock(past, perfpath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
+	clock_t t1 = clock();
+
 	mCarlo->price(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 
 	//printf("prix t echeance T : %f\n", prix);
 	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
