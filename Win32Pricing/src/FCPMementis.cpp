@@ -177,7 +177,7 @@ double FCPMementis::remboursement_echeance(const PnlMat *path) {
 
 double FCPMementis::payoff_CR(const PnlMat *path) {
 
-	double res = -VLO_ * exp(taux_capitalisation_ * T_) + remboursement_echeance(path) + GET(dividendes_, nbTimeSteps_);
+	double res = -VLO_ * exp(taux_capitalisation_ * T_) + remboursement_echeance_CR(path) + GET(dividendes_, nbTimeSteps_);
 
 	for (int annee = 1; annee < nbTimeSteps_; annee++)
 		res += GET(dividendes_, annee)*exp(taux_capitalisation_*(T_ - annee));
@@ -195,9 +195,13 @@ double FCPMementis::remboursement_echeance_CR(const PnlMat *path) {
 double FCPMementis::calcul_plus_value_CR(const PnlMat *path) {
 
 	/* Remplit les différentes vecteurs nécessaires */
-	fill_performances(path);
+	fill_performances_CR(path);
+	printf("fillperf \n");
 	PE();
+	printf("pe fait \n");
+
 	fill_dividendes_CR(path);
+	printf("div fait \n");
 
 	return fmax(pnl_vect_sum(performances_plaf_) - pnl_vect_sum(dividendes_) / VLO_, 0);
 }
@@ -211,7 +215,7 @@ void FCPMementis::fill_dividendes_CR(const PnlMat *path) {
 
 	float dividende_prec = GET(dividendes_, 4);
 
-	fill_performances_plaf(path);
+	fill_performances_plaf_CR(path);
 
 	// Dividendes année 5 à 12
 	for (int i = 5; i < nbTimeSteps_ + 1; i++) {
@@ -229,10 +233,11 @@ void FCPMementis::fill_performances_CR(const PnlMat *path) {
 	int myForeignAssets;
 	int myCurrentAssets;
 	double step = T_/path->m;
-
+	pnl_vect_int_print(nbAssetsPerMarket_);
 	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
 		perf = 0;
 		myForeignAssets = 0;
+		
 		myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket_, 0); // nombre d'actifs domestiques
 		for (int d = 0; d < myCurrentAssets; d++) { // performance des actifs domestiques reste inchangée
 			perf += MGET(path, i, d) / MGET(path, 0, d);

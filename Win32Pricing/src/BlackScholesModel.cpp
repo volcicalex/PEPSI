@@ -13,7 +13,6 @@
 * @param[in]  trend : tendance du modèle
 */
 BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *trend) {
-
 	size_ = size;
 	r_ = r;
 	rho_ = rho;
@@ -21,13 +20,13 @@ BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *s
 	spot_ = spot;
 	trend_ = trend;
 
-	L = pnl_mat_create(size_, size_);
+	L = pnl_mat_create(size, size_);
 	pnl_mat_clone(L, rho_);
 	pnl_mat_chol(L);
-	G = pnl_mat_create_from_zero(2,2);
-	Gi = pnl_vect_create_from_zero(2);
-	Ld = pnl_vect_create_from_zero(2);
 }
+
+
+
 /**
 * Constructeur de la classe dans le cas des taux de change
 * @param[in] nbAssets : nombre d'actifs du modèle : domestiques + etrangers
@@ -48,43 +47,21 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 	// copy the domestic part of sigma
 	int myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
 	int myForeignAssets;
-
 	for (int i = 0; i < myCurrentAssets; i++) {
-		pnl_vect_set(newSigma,i, pnl_vect_get(sigma, i));
+		pnl_vect_set(newSigma, i, pnl_vect_get(sigma, i));
 	}
 	// modify the foreign part of sigma
 	for (int i = 1; i < nbMarkets; i++) {
 		myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket, i);
 		for (int j = 0; j < myForeignAssets; j++) {
-			pnl_vect_set(newSigma, myCurrentAssets + j, pnl_vect_get(sigma, myCurrentAssets + j) + pnl_vect_get(sigmaChangeRate, i));
+			pnl_vect_set(newSigma, myCurrentAssets + j, pnl_vect_get(sigma, myCurrentAssets + j) + pnl_vect_get(sigmaChangeRate, i - 1));
 		}
 		myCurrentAssets = myCurrentAssets + myForeignAssets;
 	}
 	//copy all of sigmaChangeRate
-	for (int i = nbAssets; i < nbMarkets+ nbAssets; i++) {
-		pnl_vect_set(newSigma, i, pnl_vect_get(sigmaChangeRate, i));
+	for (int i = nbAssets; i < nbMarkets - 1 + nbAssets; i++) {
+		pnl_vect_set(newSigma, i, pnl_vect_get(sigmaChangeRate, i - nbAssets));
 	}
-		// copy the domestic part of sigma
-	myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
-	for (int i = 0; i < myCurrentAssets; i++) {
-		pnl_vect_set(newSigma,i, pnl_vect_get(sigma, i));
-	}
-	// modify the foreign part of sigma
-	for (int i = 1; i < nbMarkets; i++) {
-		myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket, i);
-		for (int j = 0; j < myForeignAssets; j++) {
-			pnl_vect_set(newSigma, myCurrentAssets + j, pnl_vect_get(sigma, myCurrentAssets + j) + pnl_vect_get(sigmaChangeRate, i));
-		}
-		myCurrentAssets = myCurrentAssets + myForeignAssets;
-	}
-	//copy all of sigmaChangeRate
-	for (int i = nbAssets; i < nbMarkets+ nbAssets; i++) {
-		pnl_vect_set(newSigma, i, pnl_vect_get(sigmaChangeRate, i));
-	}
-
-
-
-
 	// Construire le nouveau vecteur des spots correspondents
 	PnlVect *newSpot = pnl_vect_create(nbAssets + nbMarkets);
 	// copy the domestic part of spot
@@ -96,15 +73,35 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 	for (int i = 1; i < nbMarkets; i++) {
 		myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket, i);
 		for (int j = 0; j < myForeignAssets; j++) {
-			pnl_vect_set(newSpot, myCurrentAssets + j, pnl_vect_get(spot, myCurrentAssets + j)*pnl_vect_get(spotChangeRate, i));
+			pnl_vect_set(newSpot, myCurrentAssets + j, pnl_vect_get(spot, myCurrentAssets + j)*pnl_vect_get(spotChangeRate, i - 1));
 		}
 		myCurrentAssets = myCurrentAssets + myForeignAssets;
 	}
+
 	//copy all of sigmaChangeRate
-	for (int i = nbAssets; i < nbMarkets + nbAssets; i++) {
-		pnl_vect_set(newSpot, i, pnl_vect_get(spotChangeRate, i)*pnl_vect_get(spotRiscklessAsset, i));
+	for (int i = nbAssets; i < nbMarkets - 1 + nbAssets; i++) {
+		pnl_vect_set(newSpot, i, pnl_vect_get(spotChangeRate, i - nbAssets)*pnl_vect_get(spotRiscklessAsset, i - nbAssets));
 	}
-	BlackScholesModel(nbAssets + nbMarkets, r, rho, newSigma, newSpot, trend);
+
+
+	size_ = nbAssets + nbMarkets;
+	r_ = r;
+	rho_ = rho;
+	sigma_ = newSigma;
+	spot_ = newSpot;
+	trend_ = trend;
+
+	L = pnl_mat_create(size_, size_);
+	pnl_mat_clone(L, rho_);
+	pnl_mat_chol(L);
+	
+	//printf("taille newSpot %d \n", newSpot->size);
+	//BlackScholesModel(nbAssets + nbMarkets, r, rho, newSigma, newSpot, trend);
+
+
+	//printf("new SIZE %d \n", this->size_);
+	//printf("%d \n", nbAssets + nbMarkets);
+	//pnl_vect_print(newSpot);
 }
 
 /**
@@ -114,7 +111,49 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 	* C'est une matrice de taille (nbTimeSteps+1) x d
 	* @param[in] T  maturité
 	* @param[in] nbTimeSteps nombre de dates de constatation
-	*/
+*/
+void BlackScholesModel::asset_simple(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
+
+	double step = T / nbTimeSteps;
+	double sqrt_step = sqrt(step);
+	double sigma;
+	double expo_t;
+	double Wt;
+	double st;
+
+	PnlMat *G = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi = pnl_vect_create_from_zero(2);
+	PnlVect *Ld = pnl_vect_create_from_zero(2);
+
+
+	pnl_mat_rng_normal(G, nbTimeSteps, size_, rng);
+	for (int d = 0; d < size_; d++) {
+		pnl_mat_get_row(Ld, L, d);
+		sigma = pnl_vect_get(sigma_, d);
+		expo_t = exp((r_ - sigma * sigma / 2) * step);
+		Wt = sigma * sqrt_step;
+		for (int i = 1; i < nbTimeSteps + 1; i++) {
+
+			pnl_mat_get_row(Gi, G, i - 1);
+			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi, Ld));
+			pnl_mat_set(path, i, d, st);
+
+		}
+	}
+	pnl_mat_free(&G);
+	pnl_vect_free(&Gi);
+	pnl_vect_free(&Ld);
+}
+
+/**
+	* Génère une trajectoire du modèle et la stocke dans path
+	* version thread_safe
+	*
+	* @param[out] path contient une trajectoire du modèle.
+	* C'est une matrice de taille (nbTimeSteps+1) x d
+	* @param[in] T  maturité
+	* @param[in] nbTimeSteps nombre de dates de constatation
+*/
 void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
 
 	double step = T / nbTimeSteps;
@@ -124,8 +163,11 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 	double Wt;
 	double st;
 
-	pnl_mat_rng_normal(G, nbTimeSteps, size_, rng);
+	PnlMat *G_ = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi_ = pnl_vect_create_from_zero(2);
+	PnlVect *Ld = pnl_vect_create_from_zero(2);
 
+	pnl_mat_rng_normal(G_, nbTimeSteps, size_, rng);
 
 	for (int d = 0; d < size_; d++) {
 
@@ -136,14 +178,16 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
 
 		for (int i = 1; i < nbTimeSteps + 1; i++) {
 
-			pnl_mat_get_row(Gi, G, i - 1);
-			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi, Ld));
+			pnl_mat_get_row(Gi_, G_, i - 1);
+			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi_, Ld));
 			pnl_mat_set(path, i, d, st);
-
 		}
 	}
-}
 
+	pnl_mat_free(&G_);
+	pnl_vect_free(&Gi_);
+	pnl_vect_free(&Ld);
+}
 
 
 /**
@@ -158,7 +202,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
  * @param[in] T date jusqu'à laquelle on simule la trajectoire
  * @param[in] past trajectoire réalisée jusqu'a la date t
  */
-void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) {
+void BlackScholesModel::asset_simple(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) {
 
 	double epsilon = 0.00000001;
 	double step = T / nbTimeSteps;
@@ -172,6 +216,11 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 	double expo_t;
 	double Wt;
 	double st;
+
+	PnlMat *G = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi = pnl_vect_create_from_zero(2);
+	PnlVect *Ld = pnl_vect_create_from_zero(2);
+
 
 	pnl_mat_rng_normal(G, nbTimeSteps + 1 - nextIndex, size_, rng);
 
@@ -197,6 +246,71 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
 			pnl_mat_set(path, i, d, st);
 		}
 	}
+	pnl_mat_free(&G);
+	pnl_vect_free(&Gi);
+	pnl_vect_free(&Ld);
+
+}
+
+/**
+ * Calcule une trajectoire du sous-jacent connaissant le
+ * passé jusqu' à la date t
+ * version thread-safe
+ *
+ * @param[out] path  contient une trajectoire du sous-jacent
+ * donnée jusqu'à l'instant t par la matrice past
+ * @param[in] t date jusqu'à laquelle on connait la trajectoire.
+ * t n'est pas forcément une date de discrétisation
+ * @param[in] nbTimeSteps nombre de pas de constatation
+ * @param[in] T date jusqu'à laquelle on simule la trajectoire
+ * @param[in] past trajectoire réalisée jusqu'a la date t
+ */
+void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps, PnlRng *rng, const PnlMat *past) {
+
+	double epsilon = 0.00000001;
+	double step = T / nbTimeSteps;
+	double sqrt_step = sqrt(step);
+	double decimal_step = t / step;
+	double floor_step = floor(decimal_step);
+	int nextIndex = ((floor_step - epsilon < decimal_step) && (decimal_step < floor_step + epsilon)) ? floor_step : ceil(decimal_step);
+	double shiftStep = nextIndex * step - t;
+
+	double sigma;
+	double expo_t;
+	double Wt;
+	double st;
+
+	PnlMat *G_ = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi_ = pnl_vect_create_from_zero(2);
+	PnlVect *Ld = pnl_vect_create_from_zero(2);
+
+	pnl_mat_rng_normal(G_, nbTimeSteps + 1 - nextIndex, size_, rng);
+
+	for (int d = 0; d < size_; d++) {
+
+		pnl_mat_get_row(Ld, L, d);
+		sigma = pnl_vect_get(sigma_, d);
+
+		/* Si t n'est pas un pas de discrétisation alors on simule le prochain pas */
+		if (shiftStep != 0.0) {
+			pnl_mat_get_row(Gi_, G_, 0);
+			st = MGET(past, nextIndex, d) * exp((r_ - sigma * sigma / 2) * shiftStep + sigma * sqrt(shiftStep) * pnl_vect_scalar_prod(Ld, Gi_));
+			pnl_mat_set(path, nextIndex, d, st);
+		}
+
+		expo_t = exp((r_ - sigma * sigma / 2) * step);
+		Wt = sigma * sqrt_step;
+
+		for (int i = nextIndex + 1; i < nbTimeSteps + 1; i++) {
+			pnl_mat_get_row(Gi_, G_, i - nextIndex);
+			st = MGET(path, i - 1, d) * expo_t * exp(Wt * pnl_vect_scalar_prod(Gi_, Ld));
+			pnl_mat_set(path, i, d, st);
+		}
+	}
+
+	pnl_mat_free(&G_);
+	pnl_vect_free(&Gi_);
+	pnl_vect_free(&Ld);
 }
 
 /**
@@ -234,7 +348,7 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path, int d
 	* @param[in]  H : nombre de pas de simulation
 	* @param[in] rng : générateur de nombres aléatoires
 	*/
-void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  PnlRng *rng) {
+void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H, PnlRng *rng) {
 
 	double step = T / H;
 	double sqrt_step = sqrt(step);
@@ -244,6 +358,10 @@ void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  
 	double st;
 	double trend_d;
 
+	PnlMat *G = pnl_mat_create_from_zero(2, 2);
+	PnlVect *Gi = pnl_vect_create_from_zero(2);
+	PnlVect *Ld = pnl_vect_create_from_zero(2);
+
 	pnl_mat_rng_normal(G, H, size_, rng);
 
 	for (int d = 0; d < size_; d++) {
@@ -251,7 +369,7 @@ void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  
 		pnl_mat_get_row(Ld, L, d);
 		sigma = pnl_vect_get(sigma_, d);
 		trend_d = pnl_vect_get(trend_, d);
-		expo_t = exp((trend_d- sigma * sigma / 2) * step);
+		expo_t = exp((trend_d - sigma * sigma / 2) * step);
 		Wt = sigma * sqrt_step;
 
 		for (int i = 1; i < H + 1; i++) {
@@ -262,17 +380,19 @@ void BlackScholesModel::simul_market(PnlMat *simulatedMarket, double T, int H,  
 
 		}
 	}
+
+	pnl_mat_free(&G);
+	pnl_vect_free(&Gi);
+	pnl_vect_free(&Ld);
 }
 
 /* Destructeur pour le modele de BlackScholes */
 BlackScholesModel::~BlackScholesModel()
 {
-/*	pnl_vect_free(&sigma_);
-	pnl_vect_free(&spot_);
-	pnl_vect_free(&trend_);
-	pnl_mat_free(&rho_);*/
+	/*	pnl_vect_free(&sigma_);
+		pnl_vect_free(&spot_);
+		pnl_vect_free(&trend_);
+		pnl_mat_free(&rho_);*/
+
 	pnl_mat_free(&L);
-	pnl_mat_free(&G);
-	pnl_vect_free(&Ld);
-	pnl_vect_free(&Gi);
 }

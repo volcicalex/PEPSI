@@ -25,7 +25,7 @@ MonteCarlo::MonteCarlo(Model *mod, Option *opt, PnlRng *rng, double fdStep, int 
 	* @param[out] prix valeur de l'estimateur Monte Carlo
 	* @param[out] ic largeur de l'intervalle de confiance
 */
-void MonteCarlo::price(double &prix, double &ic) {
+void MonteCarlo::price_simple(double &prix, double &ic) {
 	double payoff;
 	prix = 0;
 	double esp_carre = 0;
@@ -33,7 +33,7 @@ void MonteCarlo::price(double &prix, double &ic) {
 	pnl_mat_set_row(path, mod_->spot_, 0);
 
 	for (int j = 0; j < nbSamples_; ++j) {
-		mod_->asset(path, opt_->T_, opt_->nbTimeSteps_, rng_);
+		mod_->asset_simple(path, opt_->T_, opt_->nbTimeSteps_, rng_);
 		payoff = opt_->payoff(path);		
 		prix += payoff;
 		esp_carre += payoff*payoff;
@@ -49,21 +49,22 @@ void MonteCarlo::price(double &prix, double &ic) {
 	* @param[out] prix valeur de l'estimateur Monte Carlo
 	* @param[out] ic largeur de l'intervalle de confiance
 */
-void MonteCarlo::price_opm(double &p_prix, double &p_ic)
+void MonteCarlo::price(double &p_prix, double &p_ic)
 {	
 	double prix = 0.0;
 	double ic = 0.0;
-	double payoff;
 
 	omp_set_num_threads(4);
 
-	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
-	pnl_mat_set_row(path, mod_->spot_, 0);
-
 #pragma omp parallel 
 	{
+		double payoff;
+
+		PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
+		pnl_mat_set_row(path, mod_->spot_, 0);
+
 		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
-		pnl_rng_sseed(rng, time(NULL));
+		pnl_rng_sseed(rng, time(NULL) + omp_get_thread_num());
 
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
@@ -73,14 +74,15 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
 			prix += payoff;
 			ic += payoff * payoff;
 		}
+
+		pnl_mat_free(&path);
 		pnl_rng_free(&rng);
+
 	}
 
 	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
 	ic = 1.96 * sqrt(ic / nbSamples_);
 	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
-
-	pnl_mat_free(&path);
 
 	p_prix = prix;
 	p_ic = ic;
@@ -96,7 +98,7 @@ void MonteCarlo::price_opm(double &p_prix, double &p_ic)
  * @param[out] ic contient la largeur de l'intervalle
  * de confiance sur le calcul du prix
  */
-void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
+void MonteCarlo::price_simple(const PnlMat *past, double t, double &prix, double &ic) {
 
 	double payoff;
 	prix = 0;
@@ -106,7 +108,7 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
 	pnl_mat_set_subblock(path, past, 0, 0);
 
 	for (int i = 0; i < nbSamples_; ++i) {
-		mod_->asset(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
+		mod_->asset_simple(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
 		payoff = opt_->payoff(path);
 		prix += payoff;
 		esp_carre += payoff*payoff;
@@ -129,21 +131,23 @@ void MonteCarlo::price(const PnlMat *past, double t, double &prix, double &ic) {
  * @param[out] ic contient la largeur de l'intervalle
  * de confiance sur le calcul du prix
  */
-void MonteCarlo::price_opm(const PnlMat *past, double t, double &p_prix, double &p_ic) {
+void MonteCarlo::price(const PnlMat *past, double t, double &p_prix, double &p_ic) {
 
 	double prix = 0.0;
 	double ic = 0.0;
-	omp_set_num_threads(2);
-	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, opt_->size_);
-	pnl_mat_set_subblock(path, past, 0, 0);
+
+	omp_set_num_threads(4);
+
 #pragma omp parallel 
 	{
-		/*int id = omp_get_thread_num();
-		int numThreads = omp_get_num_threads();
-		printf("Hello from thread %d of %d\n", id, numThreads);*/
 		double payoff;
+
+		PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, opt_->size_);
+		pnl_mat_set_subblock(path, past, 0, 0);
+
 		PnlRng *rng = pnl_rng_dcmt_create_id(omp_get_thread_num(), 1234);
-		pnl_rng_sseed(rng, 0);
+		pnl_rng_sseed(rng, time(NULL) + omp_get_thread_num());
+
 #pragma omp for reduction(+:prix) reduction(+:ic)
 		for (int i = 0; i < nbSamples_; i++)
 		{
@@ -152,13 +156,16 @@ void MonteCarlo::price_opm(const PnlMat *past, double t, double &p_prix, double 
 			prix += payoff;
 			ic += payoff * payoff;
 		}
+
+		pnl_mat_free(&path);
 		pnl_rng_free(&rng);
+
 	}
+
 	ic = exp(-2 * mod_->r_*opt_->T_)*(ic / nbSamples_ - (prix / nbSamples_)*(prix / nbSamples_));
-	//printf("variance = %f\n", ic);
 	ic = 1.96 * sqrt(ic / nbSamples_);
 	prix *= exp(-mod_->r_ * opt_->T_) / nbSamples_;
-	pnl_mat_free(&path);
+
 	p_prix = prix;
 	p_ic = ic;
 }

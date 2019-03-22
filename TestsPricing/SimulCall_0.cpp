@@ -5,8 +5,11 @@
 #include "../Win32Pricing/src/CallOption.hpp"
 #include "pnl/pnl_finance.h"
 
-
-TEST(spot_0, SimulCall) {
+/**
+* Programme de test pour le prix en 0 d'une option call
+* non parallelise
+*/
+TEST(spot_0_simple, SimulCall) {
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 
 	int size = 1;
@@ -15,7 +18,7 @@ TEST(spot_0, SimulCall) {
 	double T = 1.0;
 	int nbTimeSteps = 365;
 	double strike = 100;
-	int n_samples = 50000;
+	int n_samples = 500000;
 
 	PnlVect *sigma = pnl_vect_create_from_scalar(size, 0.200000);
 	PnlVect *spot = pnl_vect_create_from_scalar(size, 100.000000);
@@ -35,16 +38,34 @@ TEST(spot_0, SimulCall) {
 
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price(prix, ic);
+
+
+	clock_t t1 = clock();
+
+	mCarlo->price_simple(prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 	double prix2 = pnl_bs_call(100, strike, T, r, 0, 0.2);
 	//printf("prix %f, ic %f \n", prix, ic);
 	//printf("prix2 %f \n", prix2);
-	GTEST_ASSERT_LE(abs(prix - prix2), ic);
+	//GTEST_ASSERT_LE(abs(prix - prix2), ic);
+	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
-
+/**
+* Programme de test pour le prix en 0 d'une option call
+* parallelise
+*/
 TEST(spot_0_opm, SimulCall_opm) {
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 
@@ -54,7 +75,7 @@ TEST(spot_0_opm, SimulCall_opm) {
 	double T = 1.0;
 	int nbTimeSteps = 365;
 	double strike = 100;
-	int n_samples = 50000;
+	int n_samples = 500000;
 
 	PnlVect *sigma = pnl_vect_create_from_scalar(size, 0.200000);
 	PnlVect *spot = pnl_vect_create_from_scalar(size, 100.000000);
@@ -83,15 +104,29 @@ TEST(spot_0_opm, SimulCall_opm) {
 	for (int i = 0; i < 5; i++)
 	{
 		printf("prix th %f\n", prix2);
-		mCarlo->price_opm(prix, ic);
+		mCarlo->price(prix, ic);
 		printf("prix opm %f, ic %f, abs %f \n", prix, ic, abs(prix - prix2));
 		mCarlo->price(prix3, ic3);
 		printf("prix %f, ic %f, abs %f \n", prix3, ic3, abs(prix3 - prix2));
 	}*/
-	mCarlo->price_opm(prix, ic);
+
+	clock_t t1 = clock();
+
+	mCarlo->price(prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 	//printf("prix %f, ic %f \n", prix, ic);
+	//printf("prix %f \n", prix2);
 	//GTEST_ASSERT_LE(abs(prix - prix2), ic);
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }

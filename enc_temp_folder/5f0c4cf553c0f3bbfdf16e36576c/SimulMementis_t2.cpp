@@ -56,7 +56,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past, t, prix, ic);
+	mCarlo->price_simple(past, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -74,7 +74,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past1, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past1, t, prix, ic);
+	mCarlo->price_simple(past1, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -92,7 +92,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past2, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past2, t, prix, ic);
+	mCarlo->price_simple(past2, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -111,7 +111,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past3, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past3, t, prix, ic);
+	mCarlo->price_simple(past3, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -130,7 +130,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past4, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past4, t, prix, ic);
+	mCarlo->price_simple(past4, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -148,7 +148,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past5, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past5, t, prix, ic);
+	mCarlo->price_simple(past5, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -166,7 +166,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past6, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past6, t, prix, ic);
+	mCarlo->price_simple(past6, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -184,7 +184,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past7, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past7, t, prix, ic);
+	mCarlo->price_simple(past7, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -202,7 +202,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past8, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past8, t, prix, ic);
+	mCarlo->price_simple(past8, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -220,7 +220,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past9, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past9, t, prix, ic);
+	mCarlo->price_simple(past9, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -238,7 +238,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past10, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past10, t, prix, ic);
+	mCarlo->price_simple(past10, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -256,7 +256,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past11, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past11, t, prix, ic);
+	mCarlo->price_simple(past11, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -276,7 +276,7 @@ TEST(spot_t, SimulMementis5) {
 	pnl_mat_extract_subblock(past12, mementisPath, 0, step, 0, mementis->size_);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past12, t, prix, ic);
+	mCarlo->price_simple(past12, t, prix, ic);
 
 	pnl_vect_set(prixMementis, (int)t, prix);
 
@@ -286,22 +286,5 @@ TEST(spot_t, SimulMementis5) {
 
 	pnl_vect_print(prixMementis);
 
-	pnl_vect_free(&spot);
-	pnl_vect_free(&sigma);
-	pnl_vect_free(&trend);
-	pnl_mat_free(&rho_vect);
-	pnl_mat_free(&past);
-	pnl_mat_free(&past1);
-	pnl_mat_free(&past2);
-	pnl_mat_free(&past3);
-	pnl_mat_free(&past4);
-	pnl_mat_free(&past5);
-	pnl_mat_free(&past6);
-	pnl_mat_free(&past7);
-	pnl_mat_free(&past8);
-	pnl_mat_free(&past9);
-	pnl_mat_free(&past10);
-	pnl_mat_free(&past11);
-	pnl_mat_free(&past12);
 	delete mCarlo;
 }

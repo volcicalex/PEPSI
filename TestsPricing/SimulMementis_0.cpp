@@ -45,6 +45,10 @@ TEST(spot_0_mem, SimulMementis) {
 
 	//ASSERT_TRUE(false);
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
@@ -87,6 +91,10 @@ TEST(spot_0_mem, SimulMementis2) {
 
 	//ASSERT_TRUE(false);
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
@@ -129,6 +137,10 @@ TEST(spot_0_mem, SimulMementis3) {
 
 	//ASSERT_TRUE(false);
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
@@ -168,5 +180,9 @@ TEST(spot_0_mem, SimulMementis4) {
 
 	//ASSERT_TRUE(false);
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }

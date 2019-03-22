@@ -2,15 +2,17 @@
 
 #include "../Win32Pricing/src/BlackScholesModel.hpp"
 #include "../Win32Pricing/src/MonteCarlo.hpp"
-#include "../Win32Pricing/src/AsianOption.hpp"
+#include "../Win32Pricing/src/CallOption.hpp"
+#include "pnl/pnl_finance.h"
 #include <fstream>
 #include <iostream>
 
 using namespace std;
 
-TEST(spot_t_graph, SimulAsian) {
-	const char *infile = "../data/simul_asian.dat";
-	const PnlMat *asianPath = pnl_mat_create_from_file(infile);
+
+TEST(spot_t_graph, SimulCall) {
+	const char *infile = "../data/simul_call.dat";
+	const PnlMat *callPath = pnl_mat_create_from_file(infile);
 
 	double fdStep = 1;  //valeur quelconque car non utilisee pour ce test
 
@@ -35,12 +37,12 @@ TEST(spot_t_graph, SimulAsian) {
 	pnl_mat_set_diag(rho_vect, 1, 0);
 
 	Model *bsmodel = new BlackScholesModel(size, r, rho_vect, sigma, spot, trend);
-	Option *asian = new AsianOption(T, nbTimeSteps, size, weights, strike);
+	Option *call = new CallOption(T, nbTimeSteps, size, weights, strike);
 
 	pnl_rng_init(rng, PNL_RNG_MERSENNE);
 	pnl_rng_sseed(rng, time(NULL));
 
-	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, asian, rng, fdStep, n_samples);
+	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, call, rng, fdStep, n_samples);
 
 	double prix = 0.0;
 	double ic = 0.0;
@@ -49,26 +51,9 @@ TEST(spot_t_graph, SimulAsian) {
 	double step = floor(t * nbTimeSteps / T) + 1;
 
 	PnlMat *past = pnl_mat_create_from_scalar(1, size, 100.0000);
-	pnl_mat_extract_subblock(past, asianPath, 0, step, 0, size);
+	pnl_mat_extract_subblock(past, callPath, 0, step, 0, size);
 
-	PnlVect *spot2 = pnl_vect_create(size);
-	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
-
-	PnlRng *rng2 = pnl_rng_create(PNL_RNG_MERSENNE);
-	pnl_rng_init(rng2, PNL_RNG_MERSENNE);
-	pnl_rng_sseed(rng2, time(NULL));
-
-	double prix2 = 0;
-	double ic2 = 0;
-
-	Model *bsmodel2 = new BlackScholesModel(size, r, rho_vect, sigma, spot2, trend);
-	Option *asian2 = new AsianOption(T - t, nbTimeSteps - step, size, weights, strike);
-	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, asian2, rng2, fdStep, n_samples);
-
-	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price(prix2, ic2);
-
-	string const nomFichier("../data/asiant.txt");
+	string const nomFichier("../data/callt.txt");
 
 	ofstream monFlux(nomFichier.c_str());
 
@@ -76,23 +61,15 @@ TEST(spot_t_graph, SimulAsian) {
 		cout << "ERREUR: Impossible d'ouvrir le fichier." << endl;
 	}
 
-
+	double prix2 = pnl_bs_call(100, strike, T, r, 0, 0.2);
 	printf("prix theorique : %f \n", prix2);
 
 	for (size_t i = 0; i < 1001; i++)
 	{
-		mCarlo->price(past, t, prix, ic);
+		mCarlo->price_simple(past, t, prix, ic);
 		monFlux << prix - prix2 << endl;
 		printf("%i \n", i);
 	}
 
-	pnl_vect_free(&spot);
-	pnl_vect_free(&spot2);
-	pnl_vect_free(&sigma);
-	pnl_vect_free(&weights);
-	pnl_vect_free(&trend);
-	pnl_mat_free(&rho_vect);
-	pnl_mat_free(&past);
 	delete mCarlo;
-	delete mCarlo2;
 }

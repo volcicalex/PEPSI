@@ -66,7 +66,7 @@ TEST(spot_t_graph, SimulAsian) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, asian2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price(prix2, ic2);
+	mCarlo2->price_simple(prix2, ic2);
 
 	string const nomFichier("../data/asiant.txt");
 
@@ -81,18 +81,11 @@ TEST(spot_t_graph, SimulAsian) {
 
 	for (size_t i = 0; i < 1001; i++)
 	{
-		mCarlo->price(past, t, prix, ic);
+		mCarlo->price_simple(past, t, prix, ic);
 		monFlux << prix - prix2 << endl;
 		printf("%i \n", i);
 	}
 
-	pnl_vect_free(&spot);
-	pnl_vect_free(&spot2);
-	pnl_vect_free(&sigma);
-	pnl_vect_free(&weights);
-	pnl_vect_free(&trend);
-	pnl_mat_free(&rho_vect);
-	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
