@@ -43,7 +43,7 @@ BlackScholesModel::BlackScholesModel(int size, double r, PnlMat *rho, PnlVect *s
 */
 BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlVectInt  *nbAssetsPerMarket, PnlVect *sigmaChangeRate, double r, PnlMat *rho, PnlVect *sigma, PnlVect *spot, PnlVect *spotChangeRate, PnlVect *spotRiscklessAsset, PnlVect *trend) {
 	// Construire le nouveau vecteur des vols : sigma domestiques + sigma etrangers adaptés + sigma change rate
-	PnlVect *newSigma = pnl_vect_create(nbAssets + nbMarkets);
+	PnlVect *newSigma = pnl_vect_create(nbAssets + nbMarkets - 1);
 	// copy the domestic part of sigma
 	int myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
 	int myForeignAssets;
@@ -63,7 +63,7 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 		pnl_vect_set(newSigma, i, pnl_vect_get(sigmaChangeRate, i - nbAssets));
 	}
 	// Construire le nouveau vecteur des spots correspondents
-	PnlVect *newSpot = pnl_vect_create(nbAssets + nbMarkets);
+	PnlVect *newSpot = pnl_vect_create(nbAssets + nbMarkets -1);
 	// copy the domestic part of spot
 	myCurrentAssets = pnl_vect_int_get(nbAssetsPerMarket, 0);
 	for (int i = 0; i < myCurrentAssets; i++) {
@@ -84,7 +84,7 @@ BlackScholesModel::BlackScholesModel(int nbAssets, int nbMarkets, int size, PnlV
 	}
 
 
-	size_ = nbAssets + nbMarkets;
+	size_ = nbAssets + nbMarkets-1;
 	r_ = r;
 	rho_ = rho;
 	sigma_ = newSigma;

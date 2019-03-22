@@ -75,7 +75,7 @@ void FCPMementis::fill_performances_plaf_CR(const PnlMat *path) {
 	double perf_plaf;
 	int myForeignAssets;
 	int myCurrentAssets;
-	double step = T_/path->m;
+	double step = T_/(path->m-1);
 
 	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
 		perf_plaf = 0;
@@ -147,13 +147,19 @@ double FCPMementis::calcul_plus_value(const PnlMat *path) {
 * @return remboursement comprenant dividendes 
 */
 double FCPMementis::payoff(const PnlMat *path) {
+	if (nbMarkets_  == 1) {
+		double res = -VLO_ * exp(taux_capitalisation_ * T_) + remboursement_echeance(path) + GET(dividendes_, nbTimeSteps_);
 
-	double res = -VLO_ * exp(taux_capitalisation_ * T_) + remboursement_echeance(path) + GET(dividendes_, nbTimeSteps_);
+		for (int annee = 1; annee < nbTimeSteps_; annee++)
+			res += GET(dividendes_, annee)*exp(taux_capitalisation_*(T_ - annee));
 
-	for (int annee = 1; annee < nbTimeSteps_; annee++)
-		res += GET(dividendes_, annee)*exp(taux_capitalisation_*(T_ - annee));
+		return res;
+	}
+	else {
+		//printf("a \n");
+		payoff_CR(path);
+	}
 	
-	return res;
 }
 
 
@@ -196,12 +202,12 @@ double FCPMementis::calcul_plus_value_CR(const PnlMat *path) {
 
 	/* Remplit les différentes vecteurs nécessaires */
 	fill_performances_CR(path);
-	printf("fillperf \n");
+	//printf("fillperf \n");
 	PE();
-	printf("pe fait \n");
+	//printf("pe fait \n");
 
 	fill_dividendes_CR(path);
-	printf("div fait \n");
+	//printf("div fait \n");
 
 	return fmax(pnl_vect_sum(performances_plaf_) - pnl_vect_sum(dividendes_) / VLO_, 0);
 }
@@ -232,8 +238,8 @@ void FCPMementis::fill_performances_CR(const PnlMat *path) {
 	double perf;
 	int myForeignAssets;
 	int myCurrentAssets;
-	double step = T_/path->m;
-	pnl_vect_int_print(nbAssetsPerMarket_);
+	double step = T_/(path->m -1);
+	
 	for (int i = 1; i < nbTimeSteps_ + 1; i++) {
 		perf = 0;
 		myForeignAssets = 0;
@@ -245,6 +251,7 @@ void FCPMementis::fill_performances_CR(const PnlMat *path) {
 		for (int m = 1; m < nbMarkets_; m++) {
 			myForeignAssets = pnl_vect_int_get(nbAssetsPerMarket_, m);
 			for (int d = 0; d < myForeignAssets; d++) {
+
 				perf += (MGET(path, i, myCurrentAssets + d) / MGET(path, 0, myCurrentAssets + d))
 					*(MGET(path, 0, size_ + m -1) / MGET(path, i, size_ + m - 1))
 					*exp(pnl_vect_get(trend_,m) * (i * step));
