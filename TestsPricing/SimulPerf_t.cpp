@@ -7,8 +7,9 @@
 /* Methode 1 de test du prix en t
  * On verifie si le prix calcule en connaissant le passe jusqu'en t avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T-t (premiere methode asset)
+ * non parallelise
  */
-TEST(spot_t, SimulPerf) {
+TEST(spot_t_simple, SimulPerf) {
 
 	//printf("=== Methode 1 === \n");
 
@@ -56,7 +57,14 @@ TEST(spot_t, SimulPerf) {
 	pnl_mat_extract_subblock(past, perfPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(perfPath, t, prix, ic);
+	clock_t t1 = clock();
+
+	mCarlo->price_simple(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 
 	/*printf("prix t echeance T : %f\n", prix);
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
@@ -76,13 +84,20 @@ TEST(spot_t, SimulPerf) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, perf2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price(prix2, ic2);
+	mCarlo2->price_simple(prix2, ic2);
 
 	/*printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
@@ -90,8 +105,9 @@ TEST(spot_t, SimulPerf) {
 /* Methode 2 de test du prix en t
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T (premiere methode asset)
+ * non parallelise
  */
-TEST(spot_t, SimulPerf2) {
+TEST(spot_t_simple, SimulPerf2) {
 
 	//printf("=== Methode 2 === \n");
 
@@ -137,7 +153,14 @@ TEST(spot_t, SimulPerf2) {
 	pnl_mat_extract_subblock(past, perfpath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price(past, t, prix, ic);
+	clock_t t1 = clock();
+
+	mCarlo->price_simple(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 
 	/*printf("prix t echeance T : %f\n", prix);
 	printf("demi - intervalle de confiance t echeance T : %f\n", ic);*/
@@ -157,13 +180,20 @@ TEST(spot_t, SimulPerf2) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, perf2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price(prix2, ic2);
+	mCarlo2->price_simple(prix2, ic2);
 
 	/*printf("prix 0 echeance T-t : %f\n", prix2);
 	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);*/
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
@@ -172,7 +202,7 @@ TEST(spot_t, SimulPerf2) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T-t (premiere methode asset)
  */
-TEST(spot_t_opm, SimulPerf) {
+TEST(spot_t_opm, SimulPerf_opm) {
 
 	//printf("=== Methode 1 === \n");
 
@@ -220,10 +250,17 @@ TEST(spot_t_opm, SimulPerf) {
 	pnl_mat_extract_subblock(past, perfPath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price_opm(perfPath, t, prix, ic);
+	clock_t t1 = clock();
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	mCarlo->price(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
+
+	//printf("prix t echeance T : %f\n", prix);
+	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -240,13 +277,20 @@ TEST(spot_t_opm, SimulPerf) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, perf2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price_opm(prix2, ic2);
+	mCarlo2->price(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	//printf("prix 0 echeance T-t : %f\n", prix2);
+	//printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }
@@ -255,7 +299,7 @@ TEST(spot_t_opm, SimulPerf) {
  * On verifie si le prix calcule en connaissant le passe jusqu'en t=0 avec une echeance de T (deuxieme methode de asset)
  * est le meme que le prix en 0 avec une echeance de T (premiere methode asset)
  */
-TEST(spot_t_opm, SimulPerf2) {
+TEST(spot_t_opm, SimulPerf2_opm) {
 
 	//printf("=== Methode 2 === \n");
 
@@ -301,10 +345,17 @@ TEST(spot_t_opm, SimulPerf2) {
 	pnl_mat_extract_subblock(past, perfpath, 0, step, 0, size);
 
 	// Calcul du prix connaissant le passe jusqu'en t
-	mCarlo->price_opm(past, t, prix, ic);
+	clock_t t1 = clock();
 
-	printf("prix t echeance T : %f\n", prix);
-	printf("demi - intervalle de confiance t echeance T : %f\n", ic);
+	mCarlo->price(past, t, prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
+
+	//printf("prix t echeance T : %f\n", prix);
+	//printf("demi - intervalle de confiance t echeance T : %f\n", ic);
 
 	PnlVect *spot2 = pnl_vect_create(size);
 	pnl_mat_get_row(spot2, past, (int)(past->m - 1));
@@ -321,13 +372,20 @@ TEST(spot_t_opm, SimulPerf2) {
 	MonteCarlo *mCarlo2 = new MonteCarlo(bsmodel2, perf2, rng2, fdStep, n_samples);
 
 	// Calcul du prix en 0 echeance T-t
-	mCarlo2->price_opm(prix2, ic2);
+	mCarlo2->price(prix2, ic2);
 
-	printf("prix 0 echeance T-t : %f\n", prix2);
-	printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
+	//printf("prix 0 echeance T-t : %f\n", prix2);
+	//printf("demi - intervalle de confiance 0 echeance T-t : %f\n", ic2);
 
 	ASSERT_TRUE(abs(prix - prix2) / prix2 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&spot2);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 	delete mCarlo2;
 }

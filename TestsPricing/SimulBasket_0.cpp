@@ -6,9 +6,9 @@
 
 /**
 * Programme de test pour le prix en 0 d'une option basket
+* non parallelise
 */
-
-TEST(spot_0, SimulBasket) {
+TEST(spot_0_simple, SimulBasket) {
 
 	int size = 40;
 	double strike = 100;
@@ -16,7 +16,7 @@ TEST(spot_0, SimulBasket) {
 	double r = 0.04879;
 	double correlation = 0.0;
 	int timestep = 1;
-	int n_samples = 50000;
+	int n_samples = 500000;
 
 	double fdStep = 1; // valeur quelconque car non utilisee pour ce test
 
@@ -37,16 +37,34 @@ TEST(spot_0, SimulBasket) {
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, bOption, rng, fdStep, n_samples);
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price(prix, ic);
+
+	clock_t t1 = clock();
+
+	mCarlo->price_simple(prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 	//printf("prix basket option %f, ic %f \n", prix, ic);
 
-	ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
-	ASSERT_GE(13.627 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
+	//ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
+	//ASSERT_GE(13.627 + ic, prix) << "Error, price at t=0 not in confidence interval, too high";
 	//ASSERT_TRUE(abs((ic / 1.96) - 0.025) / 0.025 <= 0.05); // erreur relative inf a 5%
+	ASSERT_TRUE(abs(prix - 13.627) / 13.627 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&payoff_coef);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }
 
+/**
+* Programme de test pour le prix en 0 d'une option basket
+* parallelise
+*/
 TEST(spot_0_opm, SimulBasket_opm) {
 
 	int size = 40;
@@ -55,7 +73,7 @@ TEST(spot_0_opm, SimulBasket_opm) {
 	double r = 0.04879;
 	double correlation = 0.0;
 	int timestep = 1;
-	int n_samples = 50000;
+	int n_samples = 500000;
 
 	double fdStep = 1; // valeur quelconque car non utilisee pour ce test
 
@@ -75,7 +93,15 @@ TEST(spot_0_opm, SimulBasket_opm) {
 	MonteCarlo *mCarlo = new MonteCarlo(bsmodel, bOption, rng, fdStep, n_samples);
 	double prix = 0.0;
 	double ic = 0.0;
-	mCarlo->price_opm(prix, ic);
+
+	clock_t t1 = clock();
+
+	mCarlo->price(prix, ic);
+
+	clock_t t2 = clock();
+	float temps = (float)(t2 - t1) / CLOCKS_PER_SEC;
+	printf("temps = %f\n", temps);
+
 	//printf("prix basket option %f, ic %f \n", prix, ic);
 
 	//ASSERT_LE(13.627 - ic, prix) << "Error, price at t=0 not in confidence interval, too low";
@@ -83,5 +109,10 @@ TEST(spot_0_opm, SimulBasket_opm) {
 	//ASSERT_TRUE(abs((ic / 1.96) - 0.025) / 0.025 <= 0.05); // erreur relative inf a 5%
 	ASSERT_TRUE(abs(prix - 13.627) / 13.627 <= 0.05); // ecart relatif inf a 5%
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&payoff_coef);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }

@@ -32,6 +32,6 @@ double BasketOption::payoff(const PnlMat *path) {
 	PnlVect *vecteur = pnl_vect_new();
 	pnl_mat_get_row(vecteur,path,nbTimeSteps_);
 	double sum = pnl_vect_scalar_prod(weights_,vecteur);
-	return fmax(sum - strike_, 0.0);
 	pnl_vect_free(&vecteur);
+	return fmax(sum - strike_, 0.0);
 }

@@ -58,5 +58,10 @@ TEST(spot_graph_0, SimulCall) {
 		printf("%i \n", i);
 	}
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
 	delete mCarlo;
 }

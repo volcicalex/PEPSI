@@ -71,5 +71,11 @@ TEST(spot_t_graph, SimulCall) {
 		printf("%i \n", i);
 	}
 
+	pnl_vect_free(&spot);
+	pnl_vect_free(&sigma);
+	pnl_vect_free(&weights);
+	pnl_vect_free(&trend);
+	pnl_mat_free(&rho_vect);
+	pnl_mat_free(&past);
 	delete mCarlo;
 }
