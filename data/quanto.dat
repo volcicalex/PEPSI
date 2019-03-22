@@ -1,0 +1,18 @@
+# mc price: 13.627
+# mc standard deviation: 0.025
+
+
+model type          <string>  qt
+option size         <int>     2
+strike              <float>   100
+spot                <vector>  100 1
+maturity            <float>   3
+volatility          <vector>  0.2
+interest rate       <float>   0.04879
+correlation         <float>   0.1
+payoff coefficients <vector> 0.025
+option type         <string>  quanto
+trend              <vector>  0.036 0.00879
+
+timestep number     <int>     1
+sample number       <long>     500000

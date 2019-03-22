@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;WIN32PRICING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\PCP-Alexandre\Documents\Ensimag\3A - IF\P&amp;L_library\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ilyass\Desktop\pnl-win64-1.9.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -148,6 +148,7 @@
     <ClCompile Include="src\FCPMementis.cpp" />
     <ClCompile Include="src\MonteCarlo.cpp" />
     <ClCompile Include="src\PerformanceOption.cpp" />
+    <ClCompile Include="src\QuantoOption.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AsianOption.hpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="src\MonteCarlo.hpp" />
     <ClInclude Include="src\Option.hpp" />
     <ClInclude Include="src\PerformanceOption.hpp" />
+    <ClInclude Include="src\QuantoOption.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

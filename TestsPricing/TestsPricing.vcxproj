@@ -99,12 +99,12 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Users\PCP-Alexandre\Documents\Ensimag\3A - IF\P&amp;L_library\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ilyass\Desktop\pnl-win64-1.9.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>C:\Users\PCP-Alexandre\Documents\Ensimag\3A - IF\P&amp;L_library\lib\libpnl.lib;C:\Program Files (x86)\Visual Leak Detector\lib\Win64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\Ilyass\Desktop\pnl-win64-1.9.6\lib\libpnl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
