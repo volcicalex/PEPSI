@@ -16,6 +16,9 @@ public:
 	/*! vecteur des tendances */
 	PnlVect *trend_;
 
+	/*! vecteur des taux sans risques */
+	PnlVect *risklessrates_;
+
 	/* Point d'entrée */
 	float PE_;
 
