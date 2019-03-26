@@ -7,6 +7,7 @@ public:
 
 	/*! Prix d'exercice de l'option Quanto */
 	double strike_;
+	double rf_;
 
 	/**
 	* Constructeur de la classe
@@ -16,7 +17,7 @@ public:
 	* @param[in] weights : poids des actifs
 	* @param[in]  strike : prix d'exercice de l'option
 	*/
-	QuantoOption(double T, int nbTimeSteps, int size, PnlVect* weights, double strike);
+	QuantoOption(double T, int nbTimeSteps, int size, double rf, PnlVect* weights, double strike);
 
 
 	/**
@@ -33,5 +34,5 @@ public:
 	*Calcul du prix exacte par la formule fermée
 	*@param[in] Le modele de black-scholes
 	*/
-	double prixExact0(BlackScholesModel *bs, double rho);
+	double prixExact0(Model *bs, double rho);
 };

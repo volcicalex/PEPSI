@@ -13,8 +13,9 @@
 * @param[in] weights : poids des actifs
 * @param[in]  strike : prix d'exercice de l'option
 */
-QuantoOption::QuantoOption(double T, int nbTimeSteps, int size, PnlVect* weights, double strike) {
+QuantoOption::QuantoOption(double T, int nbTimeSteps, int size, double rf, PnlVect* weights, double strike) {
 	T_ = T;
+	rf_ = rf;
 	nbTimeSteps_ = nbTimeSteps;
 	size_ = size;
 	weights_ = weights;
@@ -30,15 +31,17 @@ QuantoOption::QuantoOption(double T, int nbTimeSteps, int size, PnlVect* weights
  * @return phi(trajectoire)
  */
 double QuantoOption::payoff(const PnlMat *path) {
-	return fmax(MGET(path, nbTimeSteps_, 0) - strike_, 0);
-
+	pnl_mat_print(path);
+	double prix = MGET(path, nbTimeSteps_, 0);
+	double strike = MGET(path, nbTimeSteps_, 1)*exp(-rf_ * T_)*strike_;
+	return fmax(prix - strike, 0);
 }
 
 /**
 *Calcul du prix exacte par la formule fermée
 *@param[in] Le modele de black-scholes
 */
-double QuantoOption::prixExact0(BlackScholesModel *bs, double rho) {
-	double rf = pnl_vect_get(bs->trend_, 1);
-	return pnl_bs_call(pnl_vect_get(bs->spot_, 0)*exp(T_*(-bs->r_ + rf - rho*pnl_vect_get(bs->sigma_, 0)*pnl_vect_get(bs->sigma_, 1))), strike_, T_, bs->r_, 0, pnl_vect_get(bs->sigma_, 0));
+double QuantoOption::prixExact0(Model *bs, double rho) {
+	double S0 = pnl_vect_get(bs->spot_, 0)*exp(T_*(-bs->r_ + rf_ + rho * pnl_vect_get(bs->sigma_, 0)*pnl_vect_get(bs->sigma_, 0)));
+	return pnl_bs_call(S0, strike_, T_, bs->r_, 0, pnl_vect_get(bs->sigma_, 0));
 }

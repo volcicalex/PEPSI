@@ -91,7 +91,7 @@ void FCPMementis::fill_performances_plaf_CR(const PnlMat *path) {
 				So_d = MGET(path, 0, myCurrentAssets + d);
 				perf_plaf += fmin(0.1, (MGET(path, i, myCurrentAssets + d) / So_d )
 					*(MGET(path, 0, size_ + m - 1) / MGET(path, i, size_ + m - 1))
-					*exp(pnl_vect_get(trend_, m) * (i * step)) - PE_);
+					*exp(pnl_vect_get(risklessrates_, m) * (i * step)) - PE_);
 			}
 			myCurrentAssets = myCurrentAssets + myForeignAssets;
 		}
@@ -254,7 +254,7 @@ void FCPMementis::fill_performances_CR(const PnlMat *path) {
 
 				perf += (MGET(path, i, myCurrentAssets + d) / MGET(path, 0, myCurrentAssets + d))
 					*(MGET(path, 0, size_ + m -1) / MGET(path, i, size_ + m - 1))
-					*exp(pnl_vect_get(trend_,m) * (i * step));
+					*exp(pnl_vect_get(risklessrates_,m) * (i * step));
 			}
 			myCurrentAssets = myCurrentAssets + myForeignAssets;
 		}

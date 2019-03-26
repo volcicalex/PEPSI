@@ -1,4 +1,7 @@
-﻿#include "Model.hpp"
+﻿#ifndef BLACKSHOLESMODEL_HEADER
+#define BLACKSHOLESMODEL_HEADER
+
+#include "Model.hpp"
 
 #include "pnl/pnl_vector.h"
 #include <ctime>
@@ -120,3 +123,5 @@ public:
 	/* Destructeur pour le model de BlackScholes */
 	~BlackScholesModel();
 };
+
+#endif

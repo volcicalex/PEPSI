@@ -31,7 +31,7 @@ void MonteCarlo::price_simple(double &prix, double &ic) {
 	double esp_carre = 0;
 	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 	pnl_mat_set_row(path, mod_->spot_, 0);
-
+	
 	for (int j = 0; j < nbSamples_; ++j) {
 		mod_->asset_simple(path, opt_->T_, opt_->nbTimeSteps_, rng_);
 		payoff = opt_->payoff(path);		
@@ -99,17 +99,18 @@ void MonteCarlo::price(double &p_prix, double &p_ic)
  * de confiance sur le calcul du prix
  */
 void MonteCarlo::price_simple(const PnlMat *past, double t, double &prix, double &ic) {
-
+	printf("Started price t \n");
 	double payoff;
 	prix = 0;
 	double esp_carre = 0;
 
-	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, opt_->size_);
+	PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1, mod_->size_);
 	pnl_mat_set_subblock(path, past, 0, 0);
 
 	for (int i = 0; i < nbSamples_; ++i) {
 		mod_->asset_simple(path, t, opt_->T_, opt_->nbTimeSteps_, rng_, past);
 		payoff = opt_->payoff(path);
+	
 		prix += payoff;
 		esp_carre += payoff*payoff;
 	}
